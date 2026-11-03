@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import { LoaderCircle, RefreshCw } from "lucide-react";
+import { BarChart3, ClipboardList, GitBranch, LoaderCircle, RefreshCw, Settings2, Shuffle, UsersRound } from "lucide-react";
 
 import { supabase } from "../../lib/supabase";
 import type { Fecha } from "./fechasService";
@@ -11,13 +11,18 @@ import ClasificatoriasPanel from "../clasificatorias/ClasificatoriasPanel";
 import EliminatoriasPanel from "../eliminatorias/EliminatoriasPanel";
 import ResultadosClasiPanel from "../clasificatorias/ResultadosClasiPanel";
 import "./gestionFecha.css";
+import ConfiguracionFecha from './ConfiguracionFecha';
+import JuradosPanel from '../jurados/JuradosPanel';
+import PlanillasPanel from '../planillas/PlanillasPanel';
+
 
 const SECCIONES = [
-  { id: "inscripciones", nombre: "Inscripciones" },
-  { id: "sorteos", nombre: "Sorteos" },
-  { id: "clasificatorias", nombre: "Clasificatorias" },
-  { id: "resultados", nombre: "Resultados clasis" },
-  { id: "eliminatorias", nombre: "Eliminatorias" },
+  { id: "inscripciones", nombre: "Inscripciones", icono: UsersRound },
+  { id: "sorteos", nombre: "Sorteos", icono: Shuffle },
+  { id: "clasificatorias", nombre: "Clasificatorias", icono: ClipboardList },
+  { id: "resultados", nombre: "Resultados", icono: BarChart3 },
+  { id: "eliminatorias", nombre: "Eliminatorias", icono: GitBranch },
+  { id: "configuracion", nombre: "Configuración", icono: Settings2 },
 ] as const;
 
 type Seccion = (typeof SECCIONES)[number]["id"];
@@ -26,7 +31,7 @@ function esSeccion(valor: string | null): valor is Seccion {
   return SECCIONES.some((seccion) => seccion.id === valor);
 }
 
-export default function GestionFecha({ fecha }: { fecha: Fecha }) {
+export default function GestionFecha({ fecha, onConfiguracionActualizada }: { fecha: Fecha; onConfiguracionActualizada: () => void }) {
   const [parametros, setParametros] = useSearchParams();
 
   const vista = parametros.get("vista");
@@ -114,6 +119,7 @@ export default function GestionFecha({ fecha }: { fecha: Fecha }) {
             aria-current={seccion === item.id ? "page" : undefined}
             onClick={() => cambiarSeccion(item.id)}
           >
+            <item.icono size={17} aria-hidden="true" />
             {item.nombre}
           </button>
         ))}
@@ -179,6 +185,16 @@ export default function GestionFecha({ fecha }: { fecha: Fecha }) {
               onFechaActualizada={setFechaActual}
             />
           )}
+          {seccion === 'configuracion' && <div className="configuracion-completa">
+            <ConfiguracionFecha fecha={fechaActual} onActualizar={onConfiguracionActualizada} />
+            <details className="acordeon"><summary><span>Jurados de clasificatorias<small>Asignaciones por grupo</small></span></summary>
+            <JuradosPanel fecha={fechaActual} />
+            </details>
+            <details className="acordeon"><summary><span>Casillas de puntuación<small>La planilla compartida de las clasificatorias</small></span></summary>
+            <PlanillasPanel fecha={fechaActual} />
+            </details>
+
+          </div>}
         </>
       )}
     </div>

@@ -8,6 +8,8 @@ export type FilaRankingClasi = {
   tanda: number;
   puesto: number | null;
   completa: boolean;
+  sin_puntuar?: boolean;
+  casillas_vacias?: boolean;
   puntos: number | null;
   jurados_esperados: number;
   jurados_finalizados: number;
@@ -25,6 +27,9 @@ export type RankingClasi = {
   estado: "en_curso" | "finalizada";
   fecha_estado: string;
   clasifican: number;
+  efectivos: number;
+  puntuados: number;
+  fase_inicial: string;
   casillas: string[];
   total: number;
   completos: number;

@@ -25,7 +25,7 @@ export type Sorteo = {
   creado_en: string;
   plan: {
     version_algoritmo: number;
-    tipo: "octavos" | "clasificatorias";
+    tipo: "dieciseisavos" | "octavos" | "clasificatorias";
     total: number;
     integrantes_por_equipo: number;
     clasifican?: number;

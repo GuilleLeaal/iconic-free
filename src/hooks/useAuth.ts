@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { supabase, enlaceAcceso } from '../lib/supabase';
 
 type Perfil = {
   id: string;
   nombre: string;
-  rol: 'organizacion' | 'jurado';
 };
 
 type ResultadoPerfil = {
@@ -15,6 +14,7 @@ type ResultadoPerfil = {
 };
 
 export function useAuth() {
+  const [requierePassword, setRequierePassword] = useState(enlaceAcceso);
   const [session, setSession] = useState<Session | null>(null);
   const [sesionCargada, setSesionCargada] = useState(false);
   const [resultadoPerfil, setResultadoPerfil] =
@@ -24,6 +24,8 @@ export function useAuth() {
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(
       (_event, nuevaSesion) => {
+        if (_event === 'PASSWORD_RECOVERY') setRequierePassword(true);
+        if (_event === 'SIGNED_OUT') setRequierePassword(false);
         setSession(nuevaSesion);
         setSesionCargada(true);
       },
@@ -43,16 +45,13 @@ export function useAuth() {
       try {
         const { data, error } = await supabase
           .from('perfiles')
-          .select('id, nombre, rol')
+          .select('id, nombre')
           .eq('id', usuarioId!)
           .single();
 
         if (error) throw error;
 
-        if (
-          !data ||
-          (data.rol !== 'organizacion' && data.rol !== 'jurado')
-        ) {
+        if (!data) {
           throw new Error('Perfil inválido.');
         }
 
@@ -62,7 +61,6 @@ export function useAuth() {
             perfil: {
               id: data.id,
               nombre: data.nombre,
-              rol: data.rol,
             },
             error: null,
           });
@@ -97,6 +95,8 @@ export function useAuth() {
   }
 
   return {
+    requierePassword,
+    terminarAcceso: () => setRequierePassword(false),
     session,
     perfil: resultadoActual?.perfil ?? null,
     errorPerfil: resultadoActual?.error ?? null,

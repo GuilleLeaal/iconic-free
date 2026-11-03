@@ -8,6 +8,7 @@ import {
 } from './sorteosService';
 import type { CruceSorteo, Sorteo } from './sorteosService';
 import './sorteos.css';
+import { supabase } from '../../lib/supabase';
 
 function TarjetaCruce({
   cruce,
@@ -70,6 +71,7 @@ export default function SorteoPanel({
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState('');
   const [intento, setIntento] = useState(0);
+  const [cantidad, setCantidad] = useState<number | null>(null);
   const operacionEnCurso = useRef(false);
 
   const admiteCambios =
@@ -84,10 +86,11 @@ export default function SorteoPanel({
       onBloqueoChange(true);
 
       try {
-        const actual = await obtenerSorteo(fecha.id);
+        const [actual, conteo] = await Promise.all([obtenerSorteo(fecha.id), supabase.from('inscripciones').select('id', { count: 'exact', head: true }).eq('fecha_id', fecha.id).eq('activa', true)]);
 
         if (!cancelado) {
           setSorteo(actual);
+          setCantidad(conteo.count);
           onBloqueoChange(actual !== null);
         }
       } catch (errorCarga) {
@@ -115,7 +118,7 @@ export default function SorteoPanel({
 
     const mensaje =
       accion === 'generar'
-        ? '¿Generar el sorteo con las inscripciones activas? Quedarán bloqueadas hasta que lo deshagas.'
+        ? `¿Generar el sorteo? ${cantidad ?? 'Cantidad sin verificar'} inscripciones · Clasifican ${fecha.cupos ?? 'según configuración histórica'} · Inicio en ${fecha.fase_inicial ?? 'octavos'}. ${cantidad !== null && fecha.cupos && cantidad < fecha.cupos ? 'Se conservará la fase elegida con pases libres y vacantes. ' : ''}Quedarán bloqueadas las inscripciones hasta deshacer el sorteo.`
         : '¿Deshacer este sorteo? Se conservará en el historial y podrás modificar las inscripciones.';
 
     if (!window.confirm(mensaje)) return;
@@ -152,7 +155,7 @@ export default function SorteoPanel({
         <div>
           <h2>Sorteo</h2>
           <p className="texto-secundario">
-            Octavos o clasificatorias según las inscripciones activas.
+            Clasificatorias y cuadro según la configuración de la fecha.
           </p>
         </div>
 
@@ -165,6 +168,8 @@ export default function SorteoPanel({
           Actualizar
         </button>
       </div>
+      {!sorteo && cantidad !== null && fecha.cupos && <p className="texto-secundario">Estimación, sin sorteo guardado: {cantidad} inscripciones · Clasifican {fecha.cupos} · Inicio en {fecha.fase_inicial} · {cantidad > fecha.cupos ? `Clasis en ${fecha.grupos_clasi ?? Math.min(3, Math.max(1, Math.ceil(cantidad / 50)))} grupos` : 'Sin clasis'} · Tandas de hasta {fecha.maximo_tanda ?? 5}.</p>}
+      {!sorteo && cantidad !== null && fecha.cupos && cantidad < fecha.cupos && <p className="aviso-formato">Hay {cantidad} inscripciones para {fecha.cupos} cupos. Podés cambiar el formato.</p>}
 
       {error && (
         <p className="mensaje-error" role="alert">{error}</p>
@@ -185,15 +190,15 @@ export default function SorteoPanel({
             <span className="estado-fecha">Sorteo guardado</span>
             <span>{sorteo.plan.total} inscripciones</span>
             <span>
-              {sorteo.plan.tipo === 'octavos'
-                ? 'Octavos'
-                : 'Clasificatorias · Clasifican 24'}
+              {sorteo.plan.tipo !== 'clasificatorias'
+                ? `Inicio en ${sorteo.plan.tipo}`
+                : `Clasificatorias · Clasifican ${sorteo.plan.clasifican}`}
             </span>
           </div>
 
-          {sorteo.plan.tipo === 'octavos' ? (
+          {sorteo.plan.tipo !== 'clasificatorias' ? (
             <>
-              {sorteo.plan.total < 16 && (
+              {sorteo.plan.total < (fecha.cupos ?? 16) && (
                 <p className="texto-secundario nota-sorteo">
                   El cuadro incluye pases libres y, si corresponde,
                   posiciones vacantes.

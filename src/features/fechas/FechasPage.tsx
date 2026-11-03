@@ -7,11 +7,18 @@ import {
   CalendarDays,
   LoaderCircle,
   Plus,
+  Search,
+  Trophy,
+  UsersRound,
+  Trash2,
 } from "lucide-react";
-import { crearFecha, listarFechas } from "./fechasService";
+import { crearFecha, eliminarFecha, listarFechas } from "./fechasService";
 import type { EstadoFecha, Fecha } from "./fechasService";
 import "./fechas.css";
 import GestionFecha from "./GestionFecha";
+import { useCompetencia } from "../competencias/ContextoCompetencia";
+import { CamposConfiguracion } from "./ConfiguracionFecha";
+import { predeterminada } from './configuracionFechaModelo';
 
 const estados: Record<EstadoFecha, string> = {
   borrador: "Borrador",
@@ -35,7 +42,7 @@ function mostrarFecha(valor: string | null) {
 }
 
 function mostrarFormato(integrantes: number) {
-  return `${integrantes} vs ${integrantes}`;
+  return integrantes === 1 ? 'Individual' : integrantes === 2 ? 'Parejas' : `Equipos de ${integrantes}`;
 }
 
 function FormularioFecha({
@@ -45,11 +52,13 @@ function FormularioFecha({
   onCreada: (fecha: Fecha) => void;
   onCancelar: () => void;
 }) {
+  const { competencia } = useCompetencia();
   const [nombre, setNombre] = useState("");
   const [fechaEvento, setFechaEvento] = useState("");
   const [integrantes, setIntegrantes] = useState("1");
-  const [jurados, setJurados] = useState("3");
+
   const [juradosClasi, setJuradosClasi] = useState("2");
+  const [configuracion, setConfiguracion] = useState(predeterminada);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
 
@@ -88,12 +97,13 @@ function FormularioFecha({
 
     try {
       const nuevaFecha = await crearFecha({
+        ...configuracion,
         nombre,
         fecha_evento: fechaEvento || null,
         integrantes_por_equipo: cantidadIntegrantes,
-        jurados_eliminatorias: jurados === "5" ? 5 : 3,
+        jurados_eliminatorias: 3, // Compatibilidad con el esquema histórico; no hay votaciones web de eliminatorias.
         jurados_por_grupo_clasi: cantidadJuradosClasi,
-      });
+      }, competencia.id);
 
       onCreada(nuevaFecha);
     } catch (errorGuardado) {
@@ -111,14 +121,17 @@ function FormularioFecha({
   return (
     <section className="panel formulario-fecha">
       <div className="titulo-seccion">
+        <span className="micro-etiqueta">CREAR FECHA</span>
         <h2>Nueva fecha</h2>
         <p className="texto-secundario">
-          Configurá el formato y la cantidad de jurados.
+          Configurá los datos, el formato y los jurados de la fecha.
         </p>
       </div>
 
       <form onSubmit={guardar}>
         <fieldset disabled={guardando}>
+          <div className="seccion-formulario">
+          <div className="cabecera-paso"><span>01</span><div><h3>Datos de la fecha</h3><p>Nombre, día y formato de participación.</p></div></div>
           <div className="campos-fecha">
             <div className="campo campo-ancho">
               <label htmlFor="nombre-fecha">Nombre</label>
@@ -126,7 +139,7 @@ function FormularioFecha({
                 id="nombre-fecha"
                 value={nombre}
                 onChange={(event) => setNombre(event.target.value)}
-                placeholder="Por ejemplo: ICONIC — Primera edición"
+                placeholder="Por ejemplo: Primera edición"
                 autoFocus
                 required
               />
@@ -158,18 +171,15 @@ function FormularioFecha({
                 1 para individual, 2 para parejas, etc.
               </span>
             </div>
+          </div>
+          </div>
+          <div className="seccion-formulario">
+            <div className="cabecera-paso"><span>02</span><div><h3>El cuadro de competencia</h3><p>Elegí la fase inicial y cuántas inscripciones se enfrentan.</p></div></div>
+            <CamposConfiguracion valor={configuracion} onChange={setConfiguracion} />
+          </div>
+          <details className="acordeon recursos-fecha"><summary><span>Jurados de clasificatorias<small>{juradosClasi} por grupo</small></span></summary>
+          <div className="campos-fecha contenido-acordeon">
 
-            <div className="campo">
-              <label htmlFor="jurados-fecha">Jurados desde octavos</label>
-              <select
-                id="jurados-fecha"
-                value={jurados}
-                onChange={(event) => setJurados(event.target.value)}
-              >
-                <option value="3">3 jurados</option>
-                <option value="5">5 jurados</option>
-              </select>
-            </div>
 
             <div className="campo">
               <label htmlFor="jurados-clasi">Jurados por grupo de clasis</label>
@@ -186,7 +196,7 @@ function FormularioFecha({
               </select>
             </div>
           </div>
-
+          </details>
           {error && (
             <p className="mensaje-error" role="alert">
               {error}
@@ -220,6 +230,7 @@ function FormularioFecha({
 }
 
 export default function FechasPage() {
+  const { competencia } = useCompetencia();
   const [params, setParams] = useSearchParams();
   const fechaId = params.get("fecha");
 
@@ -228,6 +239,12 @@ export default function FechasPage() {
   const [error, setError] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [intento, setIntento] = useState(0);
+  const [eliminando, setEliminando] = useState<string | null>(null);
+  const [errorEliminacion, setErrorEliminacion] = useState('');
+  const [aviso, setAviso] = useState('');
+  const [busqueda, setBusqueda] = useState('');
+  const [filtroEstado, setFiltroEstado] = useState('');
+  const eliminacionEnCurso = useRef(false);
 
   useEffect(() => {
     let cancelado = false;
@@ -237,7 +254,7 @@ export default function FechasPage() {
       setError("");
 
       try {
-        const datos = await listarFechas();
+        const datos = await listarFechas(competencia.id);
 
         if (!cancelado) setFechas(datos);
       } catch (errorCarga) {
@@ -256,7 +273,7 @@ export default function FechasPage() {
     return () => {
       cancelado = true;
     };
-  }, [intento]);
+  }, [intento, competencia.id]);
 
   function seleccionarFecha(id: string | null) {
     setParams((actuales) => {
@@ -273,6 +290,37 @@ export default function FechasPage() {
     setFechas((actuales) => [fecha, ...actuales]);
     setMostrarFormulario(false);
     seleccionarFecha(fecha.id);
+  }
+
+  async function borrarFecha(fecha: Fecha) {
+    if (eliminacionEnCurso.current) return;
+    if (!window.confirm(`¿Eliminar "${fecha.nombre}" de ${competencia.nombre}? Dejará de estar disponible y sus jurados no podrán seguir puntuando. Sus inscripciones, planillas y resultados se conservarán en el historial.`)) return;
+    eliminacionEnCurso.current = true;
+    setEliminando(fecha.id); setErrorEliminacion(''); setAviso('');
+    try {
+      await eliminarFecha(fecha.id, competencia.id);
+      setFechas(actuales => actuales.filter(f => f.id !== fecha.id));
+      if (fechaId === fecha.id) seleccionarFecha(null);
+      setAviso(`Fecha "${fecha.nombre}" eliminada.`);
+    } catch (e) {
+      setErrorEliminacion(e instanceof Error ? e.message : 'No pudimos confirmar la eliminación.');
+    } finally {
+      eliminacionEnCurso.current = false; setEliminando(null);
+    }
+  }
+
+  const mensajesEliminacion = <>
+    {errorEliminacion && <p className="mensaje-error" role="alert">{errorEliminacion}</p>}
+    {aviso && <p role="status">{aviso}</p>}
+  </>;
+
+  function botonEliminar(fecha: Fecha) {
+    return <button type="button" className="boton boton-icono eliminar-fecha" title="Eliminar fecha"
+      disabled={eliminando !== null} aria-label={`Eliminar ${fecha.nombre}`}
+      onClick={() => void borrarFecha(fecha)}>
+      {eliminando === fecha.id ? <LoaderCircle size={17} className="girando" aria-hidden="true" /> : <Trash2 size={17} aria-hidden="true" />}
+      <span className="solo-lectores">{eliminando === fecha.id ? 'Eliminando…' : 'Eliminar fecha'}</span>
+    </button>;
   }
 
   if (cargando) {
@@ -305,6 +353,7 @@ export default function FechasPage() {
   if (fechaId) {
     return (
       <>
+        {mensajesEliminacion}
         <button
           className="boton boton-secundario volver-fechas"
           onClick={() => seleccionarFecha(null)}
@@ -315,38 +364,34 @@ export default function FechasPage() {
 
         {seleccionada ? (
           <>
-            <div className="encabezado-pagina">
+            <div className="encabezado-pagina encabezado-detalle">
+              <div>
               <span className="etiqueta">FECHA</span>
               <h1>{seleccionada.nombre}</h1>
               <p className="texto-secundario">
                 {mostrarFecha(seleccionada.fecha_evento)}
               </p>
+              </div>
+              <div className="acciones-detalle"><span className={`estado-fecha estado-fecha-${seleccionada.estado}`}>{estados[seleccionada.estado]}</span>{botonEliminar(seleccionada)}</div>
             </div>
 
-            <section className="panel">
-              <div className="titulo-seccion titulo-configuracion">
-                <h2>Configuración</h2>
-                <span className="estado-fecha">
-                  {estados[seleccionada.estado]}
-                </span>
-              </div>
-
+            <section className="resumen-detalle" aria-label="Resumen de la fecha">
               <dl className="datos-fecha">
                 <div>
                   <dt>Formato</dt>
                   <dd>{mostrarFormato(seleccionada.integrantes_por_equipo)}</dd>
                 </div>
                 <div>
-                  <dt>Jurados desde octavos</dt>
-                  <dd>{seleccionada.jurados_eliminatorias}</dd>
+                  <dt>Cuadro inicial</dt>
+                  <dd>{seleccionada.fase_inicial ?? 'Configuración histórica'}</dd>
                 </div>
                 <div>
-                  <dt>Jurados por grupo de clasis</dt>
-                  <dd>{seleccionada.jurados_por_grupo_clasi}</dd>
+                  <dt>Cupo de clasificación</dt>
+                  <dd>{seleccionada.cupos ?? 'Según sorteo'}<small> inscripciones</small></dd>
                 </div>
               </dl>
             </section>
-            <GestionFecha key={seleccionada.id} fecha={seleccionada} />
+            <GestionFecha key={`${seleccionada.id}:${seleccionada.configuracion_version}`} fecha={seleccionada} onConfiguracionActualizada={() => setIntento(i => i + 1)} />
           </>
         ) : (
           <section className="panel">
@@ -360,14 +405,16 @@ export default function FechasPage() {
     );
   }
 
+  const fechasFiltradas = fechas.filter(f => (!filtroEstado || f.estado === filtroEstado) && f.nombre.toLocaleLowerCase('es').includes(busqueda.trim().toLocaleLowerCase('es')));
   return (
     <>
+      {mensajesEliminacion}
       <div className="cabecera-fechas">
         <div className="encabezado-pagina">
-          <span className="etiqueta">ORGANIZACIÓN</span>
+          <span className="etiqueta">EL CALENDARIO DE {competencia.nombre.toUpperCase()}</span>
           <h1>Fechas</h1>
           <p className="texto-secundario">
-            Creá una edición o abrí una existente.
+            Consultá y administrá las fechas de esta competencia.
           </p>
         </div>
 
@@ -382,6 +429,18 @@ export default function FechasPage() {
         )}
       </div>
 
+      {!mostrarFormulario && fechas.length > 0 && <>
+        <div className="metricas-fechas" aria-label="Resumen de fechas">
+          <div><span className="metrica-icono"><CalendarDays size={19} /></span><div><strong>{fechas.length}</strong><span>Fechas creadas</span></div></div>
+          <div><span className="metrica-icono metrica-en-vivo"><span className="punto-vivo" /></span><div><strong>{fechas.filter(f => f.estado === 'en_curso').length}</strong><span>En curso</span></div></div>
+          <div><span className="metrica-icono"><Trophy size={19} /></span><div><strong>{fechas.filter(f => f.estado === 'finalizada').length}</strong><span>Finalizadas</span></div></div>
+        </div>
+        <div className="barra-filtros filtros-fechas">
+          <label className="campo"><span className="solo-lectores">Buscar fecha</span><span className="entrada-con-icono"><Search size={18} /><input type="search" placeholder="Buscar una fecha…" value={busqueda} onChange={e => setBusqueda(e.target.value)} /></span></label>
+          <label className="campo"><span className="solo-lectores">Estado de las fechas</span><select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}><option value="">Todos los estados</option>{Object.entries(estados).map(([valor, texto]) => <option key={valor} value={valor}>{texto}</option>)}</select></label>
+        </div>
+      </>}
+
       {mostrarFormulario && (
         <FormularioFecha
           onCreada={fechaCreada}
@@ -389,19 +448,20 @@ export default function FechasPage() {
         />
       )}
 
-      {fechas.length === 0 ? (
+      {!mostrarFormulario && (fechas.length === 0 ? (
         <section className="panel vacio-fechas">
           <CalendarDays size={32} aria-hidden="true" />
           <h2>Todavía no hay fechas</h2>
-          <p className="texto-secundario">Creá la primera edición de ICONIC.</p>
+          <p className="texto-secundario">Creá la primera fecha de {competencia.nombre}.</p>
+          <button type="button" className="boton boton-principal" onClick={() => setMostrarFormulario(true)}><Plus size={17} />Crear primera fecha</button>
         </section>
       ) : (
         <div className="lista-fechas">
-          {fechas.map((fecha) => (
-            <article className="panel tarjeta-fecha" key={fecha.id}>
+          {fechasFiltradas.map((fecha) => (
+            <article className={`panel tarjeta-fecha tarjeta-fecha-${fecha.estado}`} key={fecha.id}>
               <div className="tarjeta-fecha-superior">
-                <CalendarDays size={23} aria-hidden="true" />
-                <span className="estado-fecha">{estados[fecha.estado]}</span>
+                <span className="icono-tarjeta-fecha"><CalendarDays size={21} aria-hidden="true" /></span>
+                <span className={`estado-fecha estado-fecha-${fecha.estado}`}>{estados[fecha.estado]}</span>
               </div>
 
               <h2>{fecha.nombre}</h2>
@@ -410,11 +470,11 @@ export default function FechasPage() {
               </p>
 
               <div className="resumen-fecha">
-                <span>{mostrarFormato(fecha.integrantes_por_equipo)}</span>
-                <span>{fecha.jurados_eliminatorias} jurados</span>
+                <span><UsersRound size={15} />{mostrarFormato(fecha.integrantes_por_equipo)}</span>
+                <span><Trophy size={15} />{fecha.cupos ?? '—'} cupos</span>
               </div>
 
-              <button
+              <div className="acciones-tarjeta-fecha"><button
                 className="boton boton-secundario"
                 onClick={() => seleccionarFecha(fecha.id)}
                 aria-label={`Abrir ${fecha.nombre}`}
@@ -422,10 +482,13 @@ export default function FechasPage() {
                 Abrir fecha
                 <ArrowRight size={17} aria-hidden="true" />
               </button>
+              {botonEliminar(fecha)}
+              </div>
             </article>
           ))}
+          {fechasFiltradas.length === 0 && <div className="panel vacio-fechas"><Search size={26} /><h2>No encontramos esa fecha</h2><p className="texto-secundario">Probá otro nombre o cambiá el filtro de estado.</p></div>}
         </div>
-      )}
+      ))}
     </>
   );
 }

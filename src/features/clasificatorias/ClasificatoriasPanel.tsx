@@ -164,7 +164,7 @@ export default function ClasificatoriasPanel({
               {!datos?.sorteo
                 ? "Generá el sorteo para saber si la fecha necesita clasificatorias."
                 : !necesitaClasis
-                  ? "Esta fecha pasa directamente a octavos."
+                  ? "Esta fecha pasa directamente a su fase inicial."
                   : permiteInicio
                     ? "Completá los jurados de los grupos necesarios y guardá la planilla antes de comenzar."
                     : "La fecha no admite iniciar clasificatorias."}
@@ -177,7 +177,7 @@ export default function ClasificatoriasPanel({
                   ?.map((grupo) => grupo.nombre)
                   .join(", ")}
                 {" · "}
-                {datos?.sorteo?.plan.clasifican} lugares para octavos
+                {datos?.sorteo?.plan.clasifican} lugares para eliminatorias
               </p>
             )}
 
@@ -200,7 +200,7 @@ export default function ClasificatoriasPanel({
                   ? "Clasificatorias en curso"
                   : "Clasificatorias finalizadas"}
                 {" · "}
-                {datos.clasificatoria.clasifican} lugares para octavos
+                {datos.clasificatoria.clasifican} lugares para eliminatorias
               </p>
 
               <p className="texto-secundario">

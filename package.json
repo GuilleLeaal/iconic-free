@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node tests/database.mjs && node tests/flujos.mjs && node --test tests/invitaciones.test.mjs tests/migracion018.test.mjs tests/eliminar-fecha.test.mjs",
+    "test:ui": "playwright test",
+    "test:concurrencia": "node tests/concurrencia.mjs",
+    "check:edge": "tsc -p tsconfig.edge.json",
+    "check:bundle": "node tests/bundle.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
@@ -17,11 +22,15 @@
     "react-router": "^8.4.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.14",
+    "@playwright/test": "^1.64.1",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
+    "embedded-postgres": "^18.6.0-beta.19",
     "oxlint": "^1.81.0",
+    "pg": "^8.23.1",
     "typescript": "~6.0.2",
     "vite": "^8.3.0"
   }
