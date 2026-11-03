@@ -1,0 +1,396 @@
+.inscripciones-panel {
+  margin-top: 24px;
+  min-width: 0;
+}
+
+.inscripciones-panel *,
+.inscripciones-panel *::before,
+.inscripciones-panel *::after {
+  box-sizing: border-box;
+}
+
+.cabecera-inscripciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cabecera-inscripciones > div {
+  min-width: 0;
+}
+
+.cabecera-inscripciones h2 {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.cabecera-inscripciones > .boton {
+  flex-shrink: 0;
+}
+
+.formulario-inscripcion {
+  padding: 24px 0;
+  margin-top: 20px;
+  border-top: 1px solid #29292d;
+  border-bottom: 1px solid #29292d;
+}
+
+.formulario-inscripcion fieldset,
+.editor-inscripcion fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.campos-inscripcion {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.campos-inscripcion .campo {
+  min-width: 0;
+}
+
+.campos-inscripcion .campo-ancho {
+  grid-column: 1 / -1;
+}
+
+.campos-inscripcion input {
+  width: 100%;
+  min-width: 0;
+}
+
+.formulario-inscripcion .mensaje-error,
+.mensaje-guardado {
+  margin-top: 18px;
+}
+
+.formulario-inscripcion .boton {
+  margin-top: 20px;
+}
+
+.mensaje-guardado {
+  color: #a9d3ac;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.filtros-inscripciones {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  margin-top: 24px;
+}
+
+.campo-busqueda-inscripciones {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.campo-busqueda-inscripciones label {
+  display: block;
+  margin-bottom: 8px;
+  color: #c8c5bf;
+  font-size: 13px;
+}
+
+.buscador-inscripciones {
+  position: relative;
+  width: 100%;
+}
+
+.buscador-inscripciones input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  margin: 0;
+  padding: 12px 48px 12px 44px;
+  border: 1px solid #343438;
+  border-radius: 10px;
+  background: #111113;
+  color: #f0ede7;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.buscador-inscripciones input::placeholder {
+  color: #85827d;
+}
+
+.buscador-inscripciones input:focus {
+  outline: none;
+  border-color: #d6b365;
+  box-shadow: 0 0 0 3px rgb(214 179 101 / 12%);
+}
+
+.icono-busqueda-inscripciones {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: #a6a4a0;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.limpiar-busqueda-inscripciones {
+  position: absolute;
+  top: 50%;
+  right: 3px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #a6a4a0;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.limpiar-busqueda-inscripciones:hover {
+  background: #242427;
+  color: #f0ede7;
+}
+
+.limpiar-busqueda-inscripciones:focus-visible,
+.inscripciones-panel .boton:focus-visible,
+.opcion-retirados input:focus-visible {
+  outline: 2px solid #d6b365;
+  outline-offset: 3px;
+}
+
+.opcion-retirados {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  margin: 0;
+  color: #a6a4a0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.opcion-retirados input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #d6b365;
+}
+
+.inscripciones-vacias {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 36px 0 12px;
+  color: #a6a4a0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.inscripciones-vacias svg {
+  flex-shrink: 0;
+}
+
+.inscripciones-vacias p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.lista-inscripciones {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-inscripciones > li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 17px 0;
+  border-bottom: 1px solid #29292d;
+}
+
+.lista-inscripciones > li:last-child {
+  border-bottom: 0;
+}
+
+.numero-inscripcion {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  min-width: 35px;
+  height: 35px;
+  padding: 0 7px;
+  border: 1px solid #393122;
+  border-radius: 9px;
+  color: #d6b365;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.datos-inscripcion {
+  flex: 1;
+  min-width: 0;
+}
+
+.lista-inscripciones h3 {
+  margin: 0;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.lista-inscripciones .texto-secundario {
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+}
+
+.acciones-inscripcion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.acciones-inscripcion .boton {
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.inscripcion-retirada .datos-inscripcion {
+  opacity: 0.65;
+}
+
+.texto-retirado {
+  display: inline-block;
+  margin-top: 6px;
+  color: #aaa49a;
+  font-size: 11px;
+}
+
+.pie-lista-inscripciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 18px;
+  border-top: 1px solid #29292d;
+}
+
+.contador-inscripciones {
+  margin: 0;
+  font-size: 13px;
+}
+
+.boton-mostrar-mas {
+  min-height: 44px;
+}
+
+.editor-inscripcion {
+  margin-top: 24px;
+  padding: 24px 0;
+  border-top: 1px solid #393122;
+  border-bottom: 1px solid #393122;
+}
+
+.editor-inscripcion h3 {
+  margin: 0 0 20px;
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+
+.editor-inscripcion .mensaje-error {
+  margin: 18px 0;
+}
+
+.editor-inscripcion form > .boton,
+.editor-inscripcion fieldset > .boton {
+  margin-top: 20px;
+}
+
+@media (max-width: 640px) {
+  .cabecera-inscripciones {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .cabecera-inscripciones > .boton {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .campos-inscripcion {
+    grid-template-columns: 1fr;
+  }
+
+  .formulario-inscripcion input,
+  .editor-inscripcion input {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .formulario-inscripcion .boton {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .filtros-inscripciones {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .campo-busqueda-inscripciones {
+    flex: none;
+    width: 100%;
+  }
+
+  .opcion-retirados {
+    width: 100%;
+  }
+
+  .lista-inscripciones > li {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 0;
+  }
+
+  .acciones-inscripcion {
+    width: 100%;
+  }
+
+  .acciones-inscripcion .boton {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+  }
+
+  .pie-lista-inscripciones {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .contador-inscripciones {
+    text-align: center;
+  }
+
+  .boton-mostrar-mas {
+    width: 100%;
+    min-height: 48px;
+  }
+}

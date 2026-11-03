@@ -1,0 +1,73 @@
+.gestion-fecha {
+  min-width: 0;
+}
+
+.navegacion-fecha {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 24px;
+  padding: 6px;
+  border: 1px solid #29292d;
+  border-radius: 12px;
+  background: #111113;
+}
+
+.navegacion-fecha button {
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #a6a4a0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.navegacion-fecha button:hover {
+  background: #202023;
+  color: #f0ede7;
+}
+
+.navegacion-fecha .seccion-fecha-activa {
+  border-color: #544526;
+  background: rgb(214 179 101 / 9%);
+  color: #d6b365;
+}
+
+.navegacion-fecha button:focus-visible {
+  outline: 2px solid #d6b365;
+  outline-offset: 2px;
+}
+
+.estado-gestion-fecha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 28px 16px;
+  color: #a6a4a0;
+  font-size: 14px;
+}
+
+.estado-gestion-fecha .mensaje-error {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .navegacion-fecha {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .navegacion-fecha button {
+    min-height: 48px;
+  }
+}

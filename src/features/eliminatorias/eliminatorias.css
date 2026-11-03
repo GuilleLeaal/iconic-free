@@ -1,0 +1,306 @@
+.eliminatorias-panel {
+  margin-top: 24px;
+  min-width: 0;
+}
+
+.eliminatorias-panel *,
+.eliminatorias-panel *::before,
+.eliminatorias-panel *::after {
+  box-sizing: border-box;
+}
+
+.cabecera-eliminatorias {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cabecera-eliminatorias > div {
+  min-width: 0;
+}
+
+.cabecera-eliminatorias h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+}
+
+.cabecera-eliminatorias > .boton {
+  flex-shrink: 0;
+  min-height: 44px;
+}
+
+.eliminatorias-panel > .mensaje-error {
+  margin-top: 20px;
+}
+
+.carga-eliminatorias {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px 0 12px;
+  color: #a6a4a0;
+  font-size: 14px;
+}
+
+.inicio-eliminatorias {
+  margin-top: 24px;
+}
+
+.inicio-eliminatorias > .boton {
+  margin-top: 18px;
+  min-height: 48px;
+}
+
+.selector-fases {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.selector-fases button {
+  min-width: 0;
+  min-height: 48px;
+  padding: 10px 8px;
+  border: 1px solid #343438;
+  border-radius: 8px;
+  background: #111113;
+  color: #aaa49a;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.selector-fases .fase-seleccionada {
+  border-color: #d6b365;
+  background: rgb(214 179 101 / 8%);
+  color: #d6b365;
+}
+
+.titulo-fase-eliminatorias {
+  margin: 24px 0 14px;
+  font-size: 17px;
+}
+
+.grilla-cruces-eliminatorias {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px;
+}
+
+.cruce-eliminatoria {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #29292d;
+  border-radius: 12px;
+  background: #111113;
+}
+
+.cruce-eliminatoria-resuelto {
+  border-color: #393122;
+}
+
+.cabecera-cruce-eliminatoria {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cabecera-cruce-eliminatoria h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.estado-cruce-eliminatoria {
+  color: #aaa49a;
+  font-size: 11px;
+}
+
+.participantes-cruce {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.participantes-cruce li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #29292d;
+}
+
+.participantes-cruce li:last-child {
+  border-bottom: 0;
+}
+
+.participantes-cruce li > div {
+  min-width: 0;
+}
+
+.participantes-cruce strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.participantes-cruce .texto-secundario {
+  margin-top: 5px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.participante-ganador {
+  color: #d6b365;
+}
+
+.participante-ganador > svg {
+  flex-shrink: 0;
+}
+
+.detalle-cruce {
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.resultado-cruce {
+  margin: 16px 0 0;
+  color: #d6b365;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.confirmacion-cruce {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #29292d;
+}
+
+.confirmacion-cruce label {
+  color: #c8c5bf;
+  font-size: 12px;
+}
+
+.confirmacion-cruce select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid #343438;
+  border-radius: 8px;
+  background: #18181b;
+  color: #f0ede7;
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.confirmacion-cruce .boton {
+  min-height: 48px;
+}
+
+.campeon-eliminatorias {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid #65522d;
+  border-radius: 12px;
+  background: rgb(214 179 101 / 8%);
+  color: #d6b365;
+}
+
+.campeon-eliminatorias > svg {
+  flex-shrink: 0;
+}
+
+.campeon-eliminatorias > div {
+  min-width: 0;
+}
+
+.campeon-eliminatorias span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.campeon-eliminatorias strong {
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+
+.eliminatorias-panel .boton:focus-visible,
+.selector-fases button:focus-visible,
+.confirmacion-cruce select:focus-visible {
+  outline: 2px solid #d6b365;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .cabecera-eliminatorias {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .cabecera-eliminatorias > .boton,
+  .inicio-eliminatorias > .boton {
+    width: 100%;
+  }
+
+  .selector-fases {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grilla-cruces-eliminatorias {
+    grid-template-columns: 1fr;
+  }
+
+  .cruce-eliminatoria {
+    padding: 16px;
+  }
+}
+
+.aviso-sorteo-fase {
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid #393122;
+  border-radius: 10px;
+  background: rgb(214 179 101 / 5%);
+}
+
+.aviso-sorteo-fase p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.aviso-sorteo-fase .boton {
+  min-height: 48px;
+  margin-top: 14px;
+}
+
+@media (max-width: 640px) {
+  .aviso-sorteo-fase .boton {
+    width: 100%;
+  }
+}
+
+.boton-deshacer-resultado {
+  min-height: 44px;
+  margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .boton-deshacer-resultado {
+    width: 100%;
+    min-height: 48px;
+  }
+}

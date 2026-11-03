@@ -1,0 +1,261 @@
+.pagina-jurado {
+  min-width: 0;
+}
+
+.pagina-jurado *,
+.pagina-jurado *::before,
+.pagina-jurado *::after {
+  box-sizing: border-box;
+}
+
+.cabecera-pagina-jurado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cabecera-pagina-jurado > div {
+  min-width: 0;
+}
+
+.cabecera-pagina-jurado h1 {
+  margin: 12px 0 8px;
+  font-size: 26px;
+  overflow-wrap: anywhere;
+}
+
+.cabecera-pagina-jurado > .boton {
+  flex-shrink: 0;
+  min-height: 44px;
+}
+
+.carga-pagina-jurado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  color: #aaa49a;
+  font-size: 13px;
+}
+
+.grupo-pagina-jurado {
+  margin-top: 24px;
+}
+
+.grupo-pagina-jurado > h2 {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.espera-jurado,
+.ayuda-planilla-jurado {
+  margin: 18px 0 0;
+  color: #aaa49a;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.estado-planilla-jurado {
+  margin: 18px 0;
+  color: #d6b365;
+  font-size: 13px;
+}
+
+.participante-planilla-jurado {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #29292d;
+  border-radius: 12px;
+  background: #111113;
+}
+
+.participante-planilla-jurado h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  overflow-wrap: anywhere;
+}
+
+.participante-planilla-jurado > .texto-secundario {
+  overflow-wrap: anywhere;
+}
+
+.casillas-planilla-jurado {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.casillas-planilla-jurado .campo {
+  min-width: 0;
+}
+
+.casillas-planilla-jurado label {
+  display: block;
+  margin-bottom: 8px;
+  color: #c8c5bf;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.casillas-planilla-jurado input {
+  width: 100%;
+  min-width: 0;
+  min-height: 50px;
+  padding: 12px;
+  border: 1px solid #343438;
+  border-radius: 8px;
+  background: #18181b;
+  color: #f0ede7;
+  font-family: inherit;
+  font-size: 18px;
+}
+
+.casillas-planilla-jurado input:disabled {
+  opacity: 0.75;
+}
+
+.total-planilla-jurado {
+  margin: 16px 0 0;
+  color: #d6b365;
+  font-size: 12px;
+}
+
+.acciones-planilla-jurado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.acciones-planilla-jurado .boton {
+  min-height: 48px;
+}
+
+.planilla-jurado > .mensaje-error {
+  margin-top: 18px;
+}
+
+.pagina-jurado .boton:focus-visible,
+.casillas-planilla-jurado input:focus-visible {
+  outline: 2px solid #d6b365;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .cabecera-pagina-jurado {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .cabecera-pagina-jurado > .boton {
+    width: 100%;
+  }
+
+  .casillas-planilla-jurado {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .participante-planilla-jurado {
+    padding: 14px;
+  }
+
+  .acciones-planilla-jurado {
+    flex-direction: column;
+  }
+
+  .acciones-planilla-jurado .boton {
+    width: 100%;
+  }
+}
+.selector-grupo-jurado {
+  margin-top: 22px;
+}
+.navegacion-tandas-jurado {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-top: 22px;
+}
+.navegacion-tandas-jurado .campo {
+  min-width: 0;
+}
+.pagina-jurado select,
+.alta-participante-clasi input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid #343438;
+  border-radius: 8px;
+  background: #18181b;
+  color: #f0ede7;
+  font: inherit;
+  font-size: 16px;
+}
+.pagina-jurado label {
+  display: block;
+  margin-bottom: 8px;
+}
+.pagina-jurado select:focus-visible,
+.alta-participante-clasi input:focus-visible {
+  outline: 2px solid #d6b365;
+  outline-offset: 3px;
+}
+.alta-participante-clasi {
+  padding: 20px 0;
+  border-bottom: 1px solid #29292d;
+}
+.alta-participante-clasi h3 {
+  margin: 0 0 10px;
+}
+.alta-participante-clasi fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 18px 0 0;
+  border: 0;
+}
+.alta-participante-clasi .campo {
+  margin-top: 14px;
+  min-width: 0;
+}
+.integrantes-alta-clasi {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.alta-participante-clasi .mensaje-error {
+  margin-top: 16px;
+}
+.navegacion-tandas-jurado .boton {
+  min-height: 48px;
+}
+@media (max-width: 640px) {
+  .navegacion-tandas-jurado {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .navegacion-tandas-jurado .campo {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .navegacion-tandas-jurado .boton {
+    width: 100%;
+    padding: 12px 8px;
+  }
+  .integrantes-alta-clasi {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+.retirar-participante-clasi {
+  margin: 8px 0;
+  min-height: 44px;
+  color: #e4b1a6;
+  white-space: normal;
+}

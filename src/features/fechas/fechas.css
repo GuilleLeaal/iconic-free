@@ -1,0 +1,233 @@
+.cabecera-fechas {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.cabecera-fechas > .boton {
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+
+.titulo-seccion h2 {
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+
+.formulario-fecha {
+  margin-bottom: 28px;
+}
+
+.formulario-fecha form {
+  margin-top: 26px;
+}
+
+.formulario-fecha fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.campos-fecha {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.campo-ancho {
+  grid-column: 1 / -1;
+}
+
+.campo select {
+  width: 100%;
+  min-height: 50px;
+  padding: 13px 15px;
+  border: 1px solid #303034;
+  border-radius: 10px;
+  background: #141416;
+  color: #f3f0e9;
+  font: inherit;
+}
+
+.campo select:focus {
+  outline: 2px solid #d6b365;
+  outline-offset: 2px;
+}
+
+.ayuda-campo {
+  color: #92918d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.acciones-formulario {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.formulario-fecha .mensaje-error {
+  margin-top: 22px;
+}
+
+.lista-fechas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.tarjeta-fecha {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tarjeta-fecha-superior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.tarjeta-fecha-superior > svg {
+  color: #d6b365;
+}
+
+.estado-fecha {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid #3a3222;
+  border-radius: 999px;
+  background: #1c1912;
+  color: #d6b365;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tarjeta-fecha h2 {
+  font-size: 21px;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+
+.resumen-fecha {
+  display: flex;
+  gap: 16px;
+  margin-top: 22px;
+  color: #ccc8bf;
+  font-size: 12px;
+}
+
+.tarjeta-fecha > .boton {
+  width: 100%;
+  margin-top: auto;
+}
+
+.tarjeta-fecha .resumen-fecha {
+  margin-bottom: 24px;
+}
+
+.vacio-fechas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 56px 24px;
+  text-align: center;
+}
+
+.vacio-fechas > svg {
+  color: #d6b365;
+}
+
+.vacio-fechas h2 {
+  font-size: 20px;
+}
+
+.carga-fechas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 0;
+  color: #a6a4a0;
+}
+
+.carga-fechas > svg {
+  color: #d6b365;
+}
+
+.volver-fechas {
+  margin-bottom: 30px;
+}
+
+.titulo-configuracion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.titulo-configuracion h2 {
+  margin-bottom: 0;
+}
+
+.datos-fecha {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 28px 0 0;
+}
+
+.datos-fecha dt {
+  color: #a6a4a0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.datos-fecha dd {
+  margin: 8px 0 0;
+  color: #f3f0e9;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .cabecera-fechas {
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 26px;
+  }
+
+  .cabecera-fechas .encabezado-pagina {
+    margin-bottom: 16px;
+  }
+
+  .cabecera-fechas > .boton {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .lista-fechas,
+  .campos-fecha,
+  .datos-fecha {
+    grid-template-columns: 1fr;
+  }
+
+  .campo-ancho {
+    grid-column: auto;
+  }
+
+  .acciones-formulario {
+    flex-wrap: wrap;
+  }
+
+  .acciones-formulario .boton {
+    flex: 1;
+  }
+}

@@ -1,0 +1,217 @@
+.jurados-panel {
+  margin-top: 24px;
+  min-width: 0;
+}
+
+.jurados-panel *,
+.jurados-panel *::before,
+.jurados-panel *::after {
+  box-sizing: border-box;
+}
+
+.cabecera-jurados {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cabecera-jurados > div {
+  min-width: 0;
+}
+
+.cabecera-jurados h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+}
+
+.cabecera-jurados > .boton {
+  flex-shrink: 0;
+  min-height: 44px;
+}
+
+.aviso-jurados {
+  margin: 20px 0 0;
+  color: #aaa49a;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.jurados-panel > .mensaje-error {
+  margin-top: 20px;
+}
+
+.carga-jurados {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px 0 12px;
+  color: #a6a4a0;
+  font-size: 14px;
+}
+
+.grilla-jurados {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.apartado-jurados {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #29292d;
+  border-radius: 12px;
+  background: #111113;
+}
+
+.titulo-apartado-jurados {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titulo-apartado-jurados h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.contador-jurados {
+  flex-shrink: 0;
+  padding: 5px 9px;
+  border: 1px solid #393438;
+  border-radius: 7px;
+  color: #aaa49a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.contador-jurados-completo {
+  border-color: #393122;
+  color: #d6b365;
+  background: rgb(214 179 101 / 7%);
+}
+
+.contador-jurados-excedido {
+  border-color: #794943;
+  color: #edaaa0;
+}
+
+.descripcion-apartado-jurados {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.jurados-sin-asignar {
+  margin: 20px 0;
+  color: #85827d;
+  font-size: 13px;
+}
+
+.lista-jurados {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-jurados li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #29292d;
+}
+
+.lista-jurados li:last-child {
+  border-bottom: 0;
+}
+
+.lista-jurados li > span {
+  min-width: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.lista-jurados .boton {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  font-size: 12px;
+}
+
+.asignar-jurado {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.asignar-jurado label {
+  grid-column: 1 / -1;
+  color: #c8c5bf;
+  font-size: 12px;
+}
+
+.asignar-jurado select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #343438;
+  border-radius: 8px;
+  background: #18181b;
+  color: #f0ede7;
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.asignar-jurado select:disabled {
+  opacity: 0.6;
+}
+
+.asignar-jurado .boton {
+  min-height: 44px;
+}
+
+.jurados-panel .boton:focus-visible,
+.asignar-jurado select:focus-visible {
+  outline: 2px solid #d6b365;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .cabecera-jurados {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .cabecera-jurados > .boton {
+    width: 100%;
+  }
+
+  .grilla-jurados {
+    grid-template-columns: 1fr;
+  }
+
+  .apartado-jurados {
+    padding: 16px;
+  }
+
+  .asignar-jurado {
+    grid-template-columns: 1fr;
+  }
+
+  .asignar-jurado select,
+  .asignar-jurado .boton {
+    min-height: 48px;
+  }
+
+  .asignar-jurado .boton {
+    width: 100%;
+  }
+}

@@ -1,0 +1,124 @@
+.sorteo-panel {
+  margin-top: 24px;
+}
+
+.cabecera-sorteo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cabecera-sorteo h2 {
+  margin-bottom: 7px;
+  font-size: 20px;
+}
+
+.sorteo-panel > .mensaje-error {
+  margin-top: 20px;
+}
+
+.resumen-sorteo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 24px 0;
+  color: #bdb8ae;
+  font-size: 12px;
+}
+
+.nota-sorteo {
+  margin: 22px 0;
+}
+
+.grilla-cruces {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.tarjeta-cruce {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #303034;
+  border-radius: 12px;
+  background: #101012;
+}
+
+.cabecera-cruce {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.cabecera-cruce h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.cabecera-cruce > span {
+  color: #d6b365;
+  font-size: 11px;
+}
+
+.tarjeta-cruce ul {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjeta-cruce li {
+  display: grid;
+  gap: 5px;
+  overflow-wrap: anywhere;
+}
+
+.tarjeta-cruce li strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tarjeta-cruce li span {
+  color: #96938c;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.grupo-clasi {
+  margin-top: 28px;
+}
+
+.grupo-clasi > h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.grupo-clasi > h3 span {
+  color: #a6a4a0;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.accion-sorteo {
+  margin-top: 24px;
+}
+
+@media (max-width: 640px) {
+  .grilla-cruces {
+    grid-template-columns: 1fr;
+  }
+
+  .cabecera-sorteo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

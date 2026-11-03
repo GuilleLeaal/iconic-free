@@ -1,0 +1,142 @@
+.fases-eliminatorias {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #29292d;
+}
+
+.fases-eliminatorias > h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.desplegable-fase {
+  margin-top: 14px;
+  border: 1px solid #29292d;
+  border-radius: 12px;
+  background: #111113;
+}
+
+.desplegable-fase > summary {
+  min-height: 52px;
+  padding: 16px 18px;
+  color: #f0ede7;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.desplegable-fase[open] > summary {
+  border-bottom: 1px solid #29292d;
+  color: #d6b365;
+}
+
+.desplegable-fase > summary:focus-visible {
+  outline: 2px solid #d6b365;
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.contenido-fase {
+  padding: 20px;
+}
+
+.contenido-fase fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.contenido-fase .mensaje-error {
+  margin-top: 18px;
+}
+
+.seccion-rondas {
+  margin-top: 24px;
+}
+
+.seccion-rondas > h4 {
+  margin: 0 0 14px;
+  color: #d6b365;
+  font-size: 14px;
+}
+
+.tarjeta-ronda {
+  margin-bottom: 14px;
+  padding: 18px;
+  border: 1px solid #303034;
+  border-radius: 10px;
+  background: #18181b;
+}
+
+.cabecera-ronda {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.cabecera-ronda .campo {
+  flex: 1;
+  min-width: 0;
+}
+
+.cabecera-ronda label {
+  display: block;
+  margin-bottom: 8px;
+  color: #c8c5bf;
+  font-size: 13px;
+}
+
+.cabecera-ronda input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid #343438;
+  border-radius: 8px;
+  background: #111113;
+  color: #f0ede7;
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.cabecera-ronda input:disabled {
+  opacity: 0.7;
+}
+
+.cabecera-ronda > .boton {
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.seccion-rondas > .boton {
+  min-height: 44px;
+}
+
+.cabecera-ronda input:focus-visible {
+  outline: 2px solid #d6b365;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .contenido-fase {
+    padding: 14px;
+  }
+
+  .tarjeta-ronda {
+    padding: 12px;
+  }
+
+  .cabecera-ronda {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cabecera-ronda > .boton,
+  .contenido-fase > .boton,
+  .seccion-rondas > .boton {
+    width: 100%;
+    min-height: 48px;
+  }
+}

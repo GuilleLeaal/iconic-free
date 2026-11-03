@@ -1,0 +1,237 @@
+.clasificatorias-panel {
+  margin-top: 24px;
+  min-width: 0;
+}
+
+.clasificatorias-panel *,
+.clasificatorias-panel *::before,
+.clasificatorias-panel *::after {
+  box-sizing: border-box;
+}
+
+.cabecera-clasificatorias {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.cabecera-clasificatorias > div {
+  min-width: 0;
+}
+
+.cabecera-clasificatorias h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+}
+
+.cabecera-clasificatorias > .boton {
+  flex-shrink: 0;
+  min-height: 44px;
+}
+
+.clasificatorias-panel > .mensaje-error {
+  margin-top: 20px;
+}
+
+.carga-clasificatorias {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px 0 12px;
+  color: #a6a4a0;
+  font-size: 14px;
+}
+
+.inicio-clasificatorias {
+  margin-top: 24px;
+}
+
+.inicio-clasificatorias > .boton {
+  margin-top: 18px;
+  min-height: 48px;
+}
+
+.resumen-clasificatorias {
+  margin: 20px 0 0;
+  padding: 16px;
+  border: 1px solid #393122;
+  border-radius: 10px;
+  background: rgb(214 179 101 / 5%);
+  color: #d6b365;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.resumen-clasificatorias p {
+  margin: 0;
+}
+
+.resumen-clasificatorias p + p {
+  margin-top: 8px;
+}
+
+.grupo-clasificatoria {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #29292d;
+}
+
+.grupo-clasificatoria h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.jurados-grupo-clasi {
+  margin: 12px 0 18px;
+  color: #c8c5bf;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.grilla-tandas-clasi {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.tanda-clasi {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #29292d;
+  border-radius: 10px;
+  background: #111113;
+}
+
+.cabecera-tanda-clasi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cabecera-tanda-clasi h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.cabecera-tanda-clasi span {
+  color: #aaa49a;
+  font-size: 11px;
+}
+
+.participantes-tanda-clasi {
+  margin: 14px 0 0;
+  padding-left: 22px;
+}
+
+.participantes-tanda-clasi li {
+  padding: 10px 0;
+  color: #a6a4a0;
+}
+
+.participantes-tanda-clasi strong {
+  color: #f0ede7;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.participantes-tanda-clasi .texto-secundario {
+  margin-top: 5px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.configuracion-clasificatorias {
+  margin-top: 20px;
+}
+
+.configuracion-clasificatorias > summary {
+  padding: 16px;
+  border: 1px solid #393122;
+  border-radius: 10px;
+  color: #d6b365;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.clasificatorias-panel .boton:focus-visible,
+.configuracion-clasificatorias > summary:focus-visible {
+  outline: 2px solid #d6b365;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .cabecera-clasificatorias {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .cabecera-clasificatorias > .boton,
+  .inicio-clasificatorias > .boton {
+    width: 100%;
+  }
+
+  .grilla-tandas-clasi {
+    grid-template-columns: 1fr;
+  }
+
+  .tanda-clasi {
+    padding: 16px;
+  }
+}
+
+.tanda-clasi-abierta {
+  border-color: #65522d;
+}
+
+.abrir-tanda-clasi {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 18px;
+}
+
+.votaciones-tanda-clasi {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #29292d;
+}
+
+.votaciones-tanda-clasi > p {
+  margin: 0 0 10px;
+  color: #d6b365;
+  font-size: 12px;
+}
+
+.votaciones-tanda-clasi ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.votaciones-tanda-clasi li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding: 7px 0;
+  font-size: 12px;
+}
+
+.votaciones-tanda-clasi li > span {
+  color: #c8c5bf;
+  overflow-wrap: anywhere;
+}
+
+.votaciones-tanda-clasi li > strong {
+  color: #aaa49a;
+  font-size: 11px;
+  font-weight: 400;
+}
