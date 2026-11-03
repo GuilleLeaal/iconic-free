@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { Competencia } from './ContextoCompetencia';
-import { ArrowUpRight, Building2, CircleUserRound, Mail, Plus, Search, Send, ShieldCheck, UsersRound } from 'lucide-react';
+import { ArrowUpRight, Building2, CircleUserRound, Mail, Plus, Search, Send, ShieldCheck, Trash2, UsersRound } from 'lucide-react';
 import Paginacion from '../../components/Paginacion';
 
 type Vinculo = { competencia_id: string; competencia: string; rol: string; estado: string };
 type Cuenta = { id: string; nombre: string; email: string | null; vinculos: Vinculo[] };
 type InvitacionPendiente = { id: string; email: string; rol: string; entrega: string; vence_en: string; vencida: boolean; competencia_id: string; competencia: string };
-export default function Administracion({ global, competencia, onElegir, onActualizar }: {
-  global: boolean; competencia: Competencia | null; onElegir: (c: Competencia) => void; onActualizar: () => void;
+export default function Administracion({ global, competencia, usuarioActualId, onElegir, onActualizar, onCompetenciaEliminada }: {
+  global: boolean; competencia: Competencia | null; usuarioActualId: string; onElegir: (c: Competencia) => void; onActualizar: () => void; onCompetenciaEliminada: (id: string) => void;
 }) {
   const [busqueda, setBusqueda] = useState('');
   const [estado, setEstado] = useState('');
@@ -117,6 +117,17 @@ export default function Administracion({ global, competencia, onElegir, onActual
                 if (!window.confirm((c.activa ? 'Desactivar ' : 'Reactivar ') + c.nombre + '. Esto afecta todos sus accesos y conserva el historial.')) return;
                 void operar(async () => { await rpc('cambiar_competencia', { p_id: c.id, p_nombre: c.nombre, p_activa: !c.activa }); });
               }}>{c.activa ? 'Desactivar' : 'Reactivar'}</button>
+              <button className="boton boton-texto accion-cautela" disabled={ocupado} aria-label={`Eliminar definitivamente competencia ${c.nombre}`} onClick={() => {
+                const confirmacion = window.prompt(`Eliminar definitivamente ${c.nombre} borrará de la base sus fechas, inscripciones, sorteos, votos y resultados. Las cuentas personales seguirán existiendo. Esta acción no se puede deshacer. Escribí el nombre de la competencia para confirmar:`);
+                if (confirmacion === null) return;
+                if (confirmacion.trim() !== c.nombre) { setError('El nombre de confirmación no coincide.'); return; }
+                void operar(async () => {
+                  await rpc('eliminar_competencia_definitiva', { p_competencia: c.id, p_confirmacion: confirmacion.trim() });
+                  setCompetencias(actuales => actuales.filter(item => item.id !== c.id));
+                  onCompetenciaEliminada(c.id);
+                  setAviso('Competencia y sus datos eliminados definitivamente.');
+                });
+              }}><Trash2 size={15} />Eliminar definitivamente</button>
             </div>
           </li>)}</ul>
           {competencias.length === 0 && <p className="estado-vacio-simple">No hay competencias para esta búsqueda.</p>}
@@ -144,7 +155,7 @@ export default function Administracion({ global, competencia, onElegir, onActual
     <section className="panel directorio-cuentas">
       <div className="cabecera-seccion"><span className="icono-seccion"><UsersRound size={21} /></span><div>
         <h2>{alcance === 'global' && global ? 'Directorio global' : 'Vínculos de ' + competencia?.nombre}</h2>
-        <p className="texto-secundario">Buscá personas y administrá sus accesos sin modificar sus actuaciones.</p>
+        <p className="texto-secundario">Buscá personas y administrá sus accesos.</p>
       </div></div>
       <div className="barra-filtros filtros-cuentas">
         <label>Buscar cuentas<span className="entrada-con-icono"><Search size={17} /><input type="search" placeholder="Nombre o correo…" value={busqueda} onChange={e => { setBusqueda(e.target.value); setPagina(0); }} /></span></label>
@@ -160,6 +171,23 @@ export default function Administracion({ global, competencia, onElegir, onActual
             setAviso('Vínculo actualizado. Sus actuaciones se conservan.');
           })}>{v.estado === 'activo' ? 'Desactivar vínculo' : 'Reactivar vínculo'}</button>}
         </li>)}</ul>
+        {global && <div className="registro-acciones"><button className="boton boton-texto accion-cautela" disabled={ocupado || c.id === usuarioActualId || !c.email} aria-label={`Eliminar definitivamente usuario ${c.nombre}`} onClick={() => {
+          const confirmacion = window.prompt(`Eliminar definitivamente la cuenta de ${c.nombre} (${c.email}) borrará su acceso, vínculos, asignaciones y votos en todas las competencias. Sus fechas y resultados se conservarán sin atribuirlos a esa cuenta. Podrás invitar al mismo correo como una cuenta nueva. Esta acción no se puede deshacer. Escribí el correo para confirmar:`);
+          if (confirmacion === null) return;
+          if (confirmacion.trim().toLowerCase() !== c.email?.toLowerCase()) { setError('El correo de confirmación no coincide.'); return; }
+          void operar(async () => {
+            const { data, error } = await supabase.functions.invoke('administrar-borrados', { body: { usuario_id: c.id, confirmacion: confirmacion.trim() } });
+            if (error || !data?.eliminado) {
+              let mensaje = data?.error;
+              if (!mensaje && error && 'context' in error && error.context instanceof Response) {
+                try { mensaje = (await error.context.json()).error; } catch { /* Mostrar el mensaje general. */ }
+              }
+              throw new Error(mensaje || 'No pudimos confirmar el borrado. Actualizá el directorio antes de reintentar.');
+            }
+            setCuentas(actuales => actuales.filter(item => item.id !== c.id));
+            setAviso('Cuenta eliminada definitivamente. Podés invitar nuevamente al mismo correo.');
+          });
+        }}><Trash2 size={15} />Eliminar cuenta definitivamente</button></div>}
       </li>)}</ul>
       {cuentas.length === 0 && <div className="estado-vacio"><UsersRound size={28} /><h3>No hay cuentas para mostrar</h3><p>Probá otra búsqueda o invitá a alguien a tu competencia.</p></div>}
       <Paginacion pagina={pagina} hayMas={mas} onCambiar={setPagina} nombre="Páginas de cuentas" />

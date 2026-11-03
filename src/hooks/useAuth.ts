@@ -5,6 +5,7 @@ import { supabase, enlaceAcceso } from '../lib/supabase';
 type Perfil = {
   id: string;
   nombre: string;
+  nombre_usuario: string | null;
 };
 
 type ResultadoPerfil = {
@@ -45,7 +46,7 @@ export function useAuth() {
       try {
         const { data, error } = await supabase
           .from('perfiles')
-          .select('id, nombre')
+          .select('id, nombre, nombre_usuario')
           .eq('id', usuarioId!)
           .single();
 
@@ -61,6 +62,7 @@ export function useAuth() {
             perfil: {
               id: data.id,
               nombre: data.nombre,
+              nombre_usuario: data.nombre_usuario ?? null,
             },
             error: null,
           });

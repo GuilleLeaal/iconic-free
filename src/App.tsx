@@ -1,12 +1,13 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ArrowRight, AudioLines, Check, LoaderCircle, LogOut, ShieldCheck } from "lucide-react";
+import { ArrowRight, AudioLines, Check, LoaderCircle, LogOut, ShieldCheck, UserRound } from "lucide-react";
 import { supabase, enlaceVencido } from "./lib/supabase";
 import { useAuth } from "./hooks/useAuth";
 import "./App.css";
 
 import Plataforma from "./features/competencias/Plataforma";
 import CompletarAcceso from "./features/competencias/CompletarAcceso";
+import MiCuenta from "./features/competencias/MiCuenta";
 
 
 function Marca() {
@@ -164,6 +165,7 @@ export default function App() {
 
   const [cerrando, setCerrando] = useState(false);
   const [errorSalida, setErrorSalida] = useState("");
+  const [miCuenta, setMiCuenta] = useState(false);
 
   async function cerrarSesion() {
     if (cerrando) return;
@@ -203,6 +205,8 @@ export default function App() {
       <header className="cabecera">
         <Marca />
         <span className="cabecera-leyenda">Gestión de competencias</span>
+        <div className="acciones-cuenta">
+        {perfil && !requierePassword && <button className="boton boton-secundario" onClick={() => setMiCuenta(actual => !actual)}><UserRound size={17} />Mi cuenta</button>}
         <button
           className="boton boton-secundario"
           onClick={cerrarSesion}
@@ -211,6 +215,7 @@ export default function App() {
           <LogOut size={17} aria-hidden="true" />
           {cerrando ? "Saliendo…" : "Cerrar sesión"}
         </button>
+        </div>
       </header>
 
       <main className="contenido" id="contenido-principal">
@@ -235,7 +240,7 @@ export default function App() {
             </button>
           </section>
         ) : perfil ? (
-          requierePassword ? <CompletarAcceso onListo={terminarAcceso} /> : <Plataforma key={perfil.id} usuarioId={perfil.id} nombre={perfil.nombre} />
+          requierePassword ? <CompletarAcceso nombreUsuario={perfil.nombre_usuario} onListo={() => { terminarAcceso(); reintentarPerfil(); }} /> : miCuenta ? <MiCuenta nombreUsuario={perfil.nombre_usuario} correo={session.user.email ?? ''} onCancelar={() => setMiCuenta(false)} onGuardar={() => { setMiCuenta(false); reintentarPerfil(); }} /> : <Plataforma key={perfil.id} usuarioId={perfil.id} nombre={perfil.nombre} />
         ) : null}
       </main>
     </div>

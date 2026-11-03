@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "node tests/database.mjs && node tests/flujos.mjs && node --test tests/invitaciones.test.mjs tests/migracion018.test.mjs tests/eliminar-fecha.test.mjs",
+    "test": "node tests/database.mjs && node tests/flujos.mjs && node --test tests/invitaciones.test.mjs tests/migracion018.test.mjs tests/eliminar-fecha.test.mjs tests/borrado-definitivo.test.mjs",
     "test:ui": "playwright test",
     "test:concurrencia": "node tests/concurrencia.mjs",
     "check:edge": "tsc -p tsconfig.edge.json",

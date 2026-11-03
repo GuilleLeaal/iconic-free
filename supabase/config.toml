@@ -2,3 +2,6 @@ project_id = "iconic-competencias"
 
 [functions.gestionar-invitacion]
 verify_jwt = true
+
+[functions.administrar-borrados]
+verify_jwt = true

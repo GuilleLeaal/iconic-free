@@ -43,6 +43,15 @@ svg { flex-shrink: 0; }
 .punto-vivo { display: inline-block; width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 4px #95d5b410; }
 
 /* Application frame */
+.acciones-cuenta { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.acciones-cuenta .boton { min-height: 38px; padding: 8px 13px; font-size: 12px; }
+.mi-cuenta { max-width: 640px; margin-inline: auto; }
+.mi-cuenta .acciones-formulario { display: flex; justify-content: flex-end; }
+@media (max-width: 640px) {
+  .cabecera { flex-wrap: wrap; }
+  .acciones-cuenta { width: 100%; }
+  .acciones-cuenta .boton { flex: 1; }
+}
 .cabecera { min-height: 82px; padding: 18px max(28px, calc((100vw - 1400px) / 2)); background: #10151d; border-color: #232c38; gap: 24px; }
 .marca { display: inline-flex; flex-direction: row; gap: 13px; align-items: center; flex-shrink: 0; }
 .marca-icono { display: grid; place-items: center; width: 40px; height: 42px; border: 1px solid #e4bd7738; border-radius: 11px; color: var(--acento); background: #e4bd7708; }

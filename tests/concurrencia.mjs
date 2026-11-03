@@ -96,6 +96,35 @@ try {
  await new Promise(r=>setTimeout(r,150));assert.equal(votoTerminado,false);
  await retiroConn.query('commit');await votoRechazado;
  console.log('PASS retiro/finalización en ambos órdenes: bloqueo mutuo, auditoría y rechazo de participantes obsoletos');
+ // El borrado definitivo de competencia espera al voto que ya está en curso.
+ await voto2.query('begin');await voto2.query('select public.guardar_votacion_clasificatoria($1,$2,1,true)',[ts[0].id,pr]);
+ let competenciaBorrada=false;
+ const borrarComp=b.query("select public.eliminar_competencia_definitiva($1,'Iconic')",[comp]).then(()=>{competenciaBorrada=true;});
+ await new Promise(r=>setTimeout(r,150));assert.equal(competenciaBorrada,false);
+ await voto2.query('commit');await borrarComp;
+ assert.equal((await c.query('select count(*)::int as n from public.fechas where competencia_id=$1',[comp])).rows[0].n,0);
+ await assert.rejects(voto2.query('select public.guardar_votacion_clasificatoria($1,$2,1,true)',[ts[0].id,pr]),/revocado/);
+ assert.equal((await c.query('select count(*)::int as n from auth.users')).rows[0].n,3);
+ // Auth y perfil se borran atómicamente y también esperan a los votos previos.
+ const compNueva=(await c.query("select public.crear_competencia('Borrado de usuario') id")).rows[0].id;
+ await c.query("insert into public.vinculos_competencia(competencia_id,usuario_id,rol,estado) values($1,$2,'jurado','activo')",[compNueva,j2]);
+ const fn=(await c.query("insert into public.fechas(competencia_id,nombre,jurados_por_grupo_clasi) values($1,'Borrado de usuario',1) returning id",[compNueva])).rows[0].id;
+ for(let i=0;i<17;i++) await c.query('select public.crear_inscripcion($1,$2,$3)',[fn,`Cuenta ${i}`,[`Cuenta ${i}`]]);
+ await c.query("select public.guardar_planilla_fecha($1,'clasificatorias',array['Puntos'],0)",[fn]);
+ await c.query("select public.configurar_jurado_fecha($1,$2,'clasi_a',true)",[fn,j2]);
+ await c.query('select public.generar_sorteo($1)',[fn]);await c.query('select public.iniciar_clasificatorias($1)',[fn]);
+ const tn=(await c.query('select t.* from public.tandas_clasificatorias t join public.grupos_clasificatorias g on g.id=t.grupo_id join public.clasificatorias cl on cl.id=g.clasificatoria_id where cl.fecha_id=$1 order by t.numero',[fn])).rows[0];
+ const pn=JSON.stringify(tn.entradas.map(e=>({inscripcion_id:e.id,casillas:[2]})));
+ await voto2.query('begin');await voto2.query('select public.guardar_votacion_clasificatoria($1,$2,0,false)',[tn.id,pn]);
+ const authConn=await cliente();let usuarioBorrado=false;
+ const borrarUsuario=authConn.query('delete from auth.users where id=$1',[j2]).then(()=>{usuarioBorrado=true;});
+ await new Promise(r=>setTimeout(r,150));assert.equal(usuarioBorrado,false);
+ await voto2.query('commit');await borrarUsuario;
+ assert.equal((await c.query('select count(*)::int as n from public.votaciones_clasificatorias where jurado_id=$1',[j2])).rows[0].n,0);
+ assert.equal((await c.query('select count(*)::int as n from public.perfiles where id=$1',[j2])).rows[0].n,0);
+ await assert.rejects(voto2.query('select public.guardar_votacion_clasificatoria($1,$2,1,false)',[tn.id,pn]),/revocado/);
+ assert.equal((await c.query('select count(*)::int as n from public.fechas where id=$1',[fn])).rows[0].n,1);
+ console.log('PASS borrado definitivo/voto: espera transacciones previas, elimina dependencias y bloquea sesiones viejas');
 } finally {
  for(const c of clients) await c.end();
  try { execFileSync(pg_ctl,['-D',directory,'-m','fast','-w','stop'],{windowsHide:true,stdio:'pipe'}); } catch { /* ver log si el arranque falló */ }

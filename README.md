@@ -18,18 +18,20 @@ npm run build
 npm run lint
 ```
 
-El frontend requiere el esquema hasta 028 y el bootstrap. Las simulaciones de
+El frontend requiere el esquema hasta 030 y el bootstrap. Las simulaciones de
 API se utilizan únicamente en las pruebas de navegador.
 
 ## Instalación de base y actualización
 
-**No se inspeccionó ni modificó Supabase remoto.** Antes de instalar, guardar un
+**Las migraciones remotas no se aplicaron desde este entorno.** Las funciones Edge de invitaciones y borrados están publicadas en iconic-free. Antes de actualizar la base, guardar un
 respaldo y ejecutar `supabase/preflight.sql`, que contiene solo lecturas.
 Comparar sus funciones, ACL, RLS, tablas, constraints, índices, triggers y vistas
 con el repo. No declarar aplicada una migración basándose solo en Git.
 
-- Base nueva con Supabase Auth: aplicar 001–028 en orden, una vez cada archivo.
-- Base con exactamente 001–015: aplicar **solo 016–028**, en orden.
+- Base nueva con Supabase Auth: aplicar 001–030 en orden, una vez cada archivo.
+- Base con exactamente 001–015: aplicar **solo 016–030**, en orden.
+- Si ya aplicaste hasta 028, ejecutar **029_borrado_definitivo.sql** y **030_nombres_de_usuario.sql**, en ese orden, antes de publicar el nuevo frontend. Ver [actualización 029–030](docs/ACTUALIZACION_029_030.md).
+- Para bases anteriores, aplicar los pasos faltantes hasta 028 indicados debajo y después 029–030.
 - Si ya aplicaste hasta 027, ejecutar **solo 028_retiro_por_ausencia_con_contexto.sql** para restaurar el retiro por ausencia por jurados asignados y completar el soporte de tandas de seis.
 - Si ya aplicaste hasta 026, ejecutar 027 y 028, en orden. Los sorteos nuevos realizan clasificatorias únicamente si se supera el cupo; se conservan los sorteos y votos existentes.
 - Si ya aplicaste hasta 025, ejecutar 026, 027 y 028, en orden. La 026 permite hasta seis inscripciones por tanda y mantiene el valor predeterminado de cinco.
@@ -69,6 +71,8 @@ agregan sin rellenar autores ni timestamps históricos desconocidos.
 | 026 | Máximo configurable de hasta seis inscripciones por tanda |
 | 027 | Clasificatorias únicamente si las inscripciones superan el cupo |
 | 028 | Retiro por ausencia con permisos por competencia y tandas iniciadas de hasta seis |
+| 029 | Borrado físico de cuentas y competencias, limpieza y protección del administrador |
+| 030 | Nombre de usuario único y edición de la propia cuenta |
 
 La actualización deja inicialmente las fechas antiguas sin competencia y sin
 acceso. En una ventana de mantenimiento, aplicar todos los correctivos y luego
@@ -86,7 +90,7 @@ anteriores únicamente como organizadores de Iconic. El UUID indicado es el
 al administrador. Su ejecución está revocada para la API. No se infiere identidad
 por nombre, metadata ni antigüedad.
 
-No se borran cuentas, votos ni resultados. No hay un reset incluido. Las futuras
+La desactivación conserva cuentas, votos y resultados. Los nuevos botones de eliminación definitiva de administración global borran físicamente la cuenta y sus dependencias, o la competencia y todos sus recursos. No hay un reset incluido. Las futuras
 fechas deben indicar su competencia. Las fechas antiguas conservan sorteos y
 configuración; sus campos nuevos no reciben valores retroactivos. Para generar
 un nuevo sorteo deben elegirse explícitamente las opciones. Los cierres
@@ -119,6 +123,7 @@ el proyecto y el dominio:
 ```sh
 supabase secrets set APP_URL=https://TU_DOMINIO --project-ref TU_PROJECT_REF
 supabase functions deploy gestionar-invitacion --project-ref TU_PROJECT_REF
+supabase functions deploy administrar-borrados --project-ref TU_PROJECT_REF
 ```
 
 Para el frontend, generar `dist/` con las variables públicas del proyecto de
@@ -211,3 +216,5 @@ Ver [diagnóstico y plan](docs/IMPLEMENTACION.md) y
 [resultados y límites](docs/PRUEBAS.md).
 
 Los jurados asignados pueden retirar participantes por ausencia de su tanda mientras ninguna planilla esté finalizada. El retiro se aplica a todo el grupo, conserva las demás notas y registra en auditoría privada la entrada y los borradores anteriores. La inscripción general y el sorteo histórico permanecen guardados.
+
+Cada persona elige un nombre de usuario único de 3–30 caracteres (letras sin tildes, números, punto o guion bajo; inicial alfanumérica), guardado en minúsculas. Se configura al preparar el acceso o desde Mi cuenta. El ingreso y las invitaciones siguen usando correo. Los perfiles anteriores conservan su nombre hasta que lo editen.

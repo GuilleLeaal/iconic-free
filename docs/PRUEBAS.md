@@ -1,10 +1,10 @@
 # Verificación
 
-Fecha de trabajo: 2 de noviembre de 2026, America/Montevideo.
+Fecha de trabajo: 3 de noviembre de 2026, America/Montevideo.
 
 ## Ejecutado
 
-- `npm test`: reconstrucción 001–028 y actualización desde 001–015 en
+- `npm test`: reconstrucción 001–030 y actualización desde 001–015 en
   PostgreSQL/PGlite 0.5.14; seis pruebas del flujo privilegiado de invitación.
   Incluye seis regresiones de 018: adopción de tabla/RPC preexistentes sin
   modificar datos, rechazo de columnas adicionales obligatorias, CHECK de fase
@@ -16,9 +16,9 @@ Fecha de trabajo: 2 de noviembre de 2026, America/Montevideo.
 - `npm run check:bundle`: bundle sin referencias a clave privilegiada, claves
   secretas ni JWT de service_role.
 - `npm run lint`: sin errores; advertencias de efectos React en componentes
-  existentes. Vite informa un bundle principal de aproximadamente 619 kB antes
+  existentes. Vite informa un bundle principal de aproximadamente 616 kB antes
   de gzip.
-- `npm run test:ui`: veinticuatro pruebas pasan en Chromium desktop y Pixel 7,
+- `npm run test:ui`: treinta y cuatro pruebas pasan en Chromium desktop y Pixel 7,
   mediante fixtures interceptados en localhost. Incluyen un recorrido visual de acceso, fechas, inscripciones, sorteos, clasificatorias, resultados, eliminatorias, configuración, cuentas y planillas; búsqueda, navegación y ausencia de desbordes horizontales.
 - `npm run test:concurrencia`: reconstrucción en PostgreSQL 18.6 nativo, Windows
   x64; conexiones distintas para voto/configuración, cierre con versión vieja
@@ -54,11 +54,7 @@ entrega real.
 
 ## Pendiente de instalación
 
-No se accedió al esquema remoto ni a su historial real. No se ejecutaron
-migraciones remotas, resets, invitaciones reales, cambios de credenciales,
-publicación ni despliegue. Falta contrastar el preflight, proporcionar UUID y
-correo del administrador, aplicar los correctivos faltantes, ejecutar el
-bootstrap y configurar/publicar la función con SMTP/redirects.
+Las funciones gestionar-invitacion y administrar-borrados están publicadas en iconic-free. APP_URL apunta a https://iconic-free.vercel.app. El usuario confirmó recepción y acceso desde la invitación con SMTP configurado. No se aplicaron migraciones remotas desde este entorno ni se ejecutaron borrados reales. Las migraciones 029–030 y la publicación del nuevo frontend siguen pendientes de instalación.
 
 No se ejecutó el runtime completo de Supabase Edge/GoTrue en este equipo. Su
 integración con correo y PostgREST debe verificarse durante la instalación
@@ -72,3 +68,5 @@ La 027 se aplica también sobre el flujo histórico hasta 026: comprueba que 12 
 La interfaz verifica que no aparecen planillas de eliminatorias ni un selector de jurados de eliminatorias. El panel de eliminatorias identifica el registro de ganadores por organización; las puntuaciones de jurados se limitan a clasificatorias.
 
 La 028 verifica retiros con jurados asignados y acceso activo, rechazo de actores ajenos y versiones viejas, idempotencia, auditoría privada con borradores previos, conservación de cero y notas restantes, retiro de toda una tanda y bloqueo por finalización/revocación. Inicia tandas reales de seis. En Chromium se prueban confirmación/cancelación, conservación de borradores locales, recarga, error y reintento. En PostgreSQL nativo se comprueba retiro/finalización en ambos órdenes con conexiones distintas.
+
+029–030: seis pruebas nuevas comprueban borrado físico de Auth/perfil/dependencias, reinvitación del mismo correo y reutilización del nombre de usuario con UUID nuevo; conservación de eventos sin autor al borrar un organizador; borrado completo de una competencia con clasificatorias y torneo finalizado, sin afectar cuentas u otra competencia; bloqueo atómico por envío en curso; protección del administrador; ACL y nombres únicos normalizados. Las pruebas nativas agregan carreras voto/borrado de usuario y competencia. La interfaz agrega diez escenarios (escritorio/celular) de confirmación por texto, cancelación, error/reintento, limpieza de selección, controles exclusivos de administración, Mi cuenta y preparación del acceso con nombre de usuario.

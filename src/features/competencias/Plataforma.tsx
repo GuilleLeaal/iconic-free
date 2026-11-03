@@ -70,7 +70,7 @@ export default function Plataforma({ usuarioId, nombre }: { usuarioId: string; n
       if (error) setError(error.message); else setRevision(r => r + 1);
     }}>Aceptar vínculo</button></div>)}</section>}
     {error && <p className="mensaje-error" role="alert">{error}</p>}
-    {admin ? <Administracion key={`${seleccion?.id}:admin`} global={accesos.administrador} competencia={seleccion} onElegir={c => { setSeleccion(c); setAdmin(false); }} onActualizar={() => setRevision(r => r + 1)} />
+    {admin ? <Administracion key={`${seleccion?.id}:admin`} global={accesos.administrador} competencia={seleccion} usuarioActualId={usuarioId} onElegir={c => { setSeleccion(c); setAdmin(false); }} onCompetenciaEliminada={id => { setSeleccion(actual => actual?.id === id ? null : actual); setRevision(r => r + 1); }} onActualizar={() => setRevision(r => r + 1)} />
       : seleccion ? <ContextoCompetencia.Provider key={`${usuarioId}:${seleccion.id}:${rolActual}`} value={{ competencia: seleccion, usuarioId }}>
         {rolActual === 'organizacion' ? <BrowserRouter><FechasPage /></BrowserRouter> : <JuradoPage juradoId={usuarioId} nombre={nombre} competenciaId={seleccion.id} />}
       </ContextoCompetencia.Provider> : <section className="panel"><p>No tenés vínculos activos. Aceptá una invitación o solicitá acceso a organización.</p>{accesos.administrador && <button className="boton boton-principal" onClick={() => setAdmin(true)}>Gestionar competencias</button>}</section>}
