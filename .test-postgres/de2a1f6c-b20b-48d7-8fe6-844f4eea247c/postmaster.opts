@@ -1,0 +1,1 @@
+C:/Users/Usuario/Desktop/ICONIC/iconic-organizacion/node_modules/@embedded-postgres/windows-x64/native/bin/postgres.exe "-D" "C:\Users\Usuario\Desktop\ICONIC\iconic-organizacion\.test-postgres\de2a1f6c-b20b-48d7-8fe6-844f4eea247c" "-p" "53103" "-h" "127.0.0.1"
