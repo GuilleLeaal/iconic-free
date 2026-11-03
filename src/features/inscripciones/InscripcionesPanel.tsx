@@ -181,11 +181,6 @@ export default function InscripcionesPanel({
       return;
     }
 
-    if (!esIndividual && !borrador.nombre.trim()) {
-      setErrorFormulario("Ingresá el nombre del equipo.");
-      return;
-    }
-
     guardadoEnCurso.current = true;
     setGuardando(true);
 
@@ -309,7 +304,7 @@ export default function InscripcionesPanel({
               {!esIndividual && (
                 <div className="campo campo-ancho">
                   <label htmlFor={`equipo-${fecha.id}`}>
-                    Nombre del equipo
+                    Nombre del equipo (opcional)
                   </label>
                   <input
                     id={`equipo-${fecha.id}`}
@@ -320,8 +315,8 @@ export default function InscripcionesPanel({
                         nombre: event.target.value,
                       }))
                     }
-                    required
                   />
+                  <span className="ayuda-campo">Si queda vacío, se mostrarán los alias de los integrantes.</span>
                 </div>
               )}
 

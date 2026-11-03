@@ -21,7 +21,7 @@ export default function EditarInscripcion({
 
   const [datos, setDatos] = useState(() => {
     const originales = {
-      nombre: inscripcion.nombre,
+      nombre: !esIndividual && inscripcion.nombre === inscripcion.integrantes.map(i => i.alias).join(' / ') ? '' : inscripcion.nombre,
       integrantes: inscripcion.integrantes.map((item) => item.alias),
       version: inscripcion.version,
     };
@@ -93,11 +93,8 @@ export default function EditarInscripcion({
 
     if (enCurso.current || desactualizado) return;
 
-    if (
-      datos.integrantes.some((alias) => !alias.trim()) ||
-      (!esIndividual && !datos.nombre.trim())
-    ) {
-      setError('Completá el nombre y todos los alias que correspondan.');
+    if (datos.integrantes.some((alias) => !alias.trim())) {
+      setError('Completá todos los alias que correspondan.');
       return;
     }
 
@@ -149,7 +146,7 @@ export default function EditarInscripcion({
             {!esIndividual && (
               <div className="campo campo-ancho">
                 <label htmlFor={`editar-nombre-${inscripcion.id}`}>
-                  Nombre del equipo
+                  Nombre del equipo (opcional)
                 </label>
                 <input
                   id={`editar-nombre-${inscripcion.id}`}
@@ -160,8 +157,8 @@ export default function EditarInscripcion({
                       nombre: event.target.value,
                     }))
                   }
-                  required
                 />
+                <span className="ayuda-campo">Si queda vacío, se mostrarán los alias de los integrantes.</span>
               </div>
             )}
 

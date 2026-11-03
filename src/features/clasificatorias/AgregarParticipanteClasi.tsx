@@ -225,16 +225,16 @@ export default function AgregarParticipanteClasi({
             {cantidad > 1 && (
               <div className="campo">
                 <label htmlFor={`nombre-alta-${tandaId}`}>
-                  Nombre del equipo
+                  Nombre del equipo (opcional)
                 </label>
                 <input
                   id={`nombre-alta-${tandaId}`}
                   value={formulario.nombre}
-                  required
                   onChange={(e) =>
                     editar({ ...formulario, nombre: e.target.value })
                   }
                 />
+                <span className="ayuda-campo">Si queda vacío, se mostrarán los alias de los integrantes.</span>
               </div>
             )}
             <div className="integrantes-alta-clasi">

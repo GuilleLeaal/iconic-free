@@ -18,7 +18,7 @@ npm run build
 npm run lint
 ```
 
-El frontend requiere el esquema hasta 030 y el bootstrap. Las simulaciones de
+El frontend requiere el esquema hasta 031 y el bootstrap. Las simulaciones de
 API se utilizan únicamente en las pruebas de navegador.
 
 ## Instalación de base y actualización
@@ -28,10 +28,11 @@ respaldo y ejecutar `supabase/preflight.sql`, que contiene solo lecturas.
 Comparar sus funciones, ACL, RLS, tablas, constraints, índices, triggers y vistas
 con el repo. No declarar aplicada una migración basándose solo en Git.
 
-- Base nueva con Supabase Auth: aplicar 001–030 en orden, una vez cada archivo.
-- Base con exactamente 001–015: aplicar **solo 016–030**, en orden.
-- Si ya aplicaste hasta 028, ejecutar **029_borrado_definitivo.sql** y **030_nombres_de_usuario.sql**, en ese orden, antes de publicar el nuevo frontend. Ver [actualización 029–030](docs/ACTUALIZACION_029_030.md).
-- Para bases anteriores, aplicar los pasos faltantes hasta 028 indicados debajo y después 029–030.
+- Base nueva con Supabase Auth: aplicar 001–031 en orden, una vez cada archivo.
+- Base con exactamente 001–015: aplicar **solo 016–031**, en orden.
+- Si ya aplicaste hasta 030, ejecutar **solo 031_nombre_equipo_opcional.sql**. Permite dejar vacío el nombre del equipo en altas, edición y altas tardías; en ese caso se usan los alias de los integrantes.
+- Si ya aplicaste hasta 028, ejecutar **029_borrado_definitivo.sql** y **030_nombres_de_usuario.sql**, en ese orden, y después 031 antes de publicar el nuevo frontend. Ver [actualización 029–030](docs/ACTUALIZACION_029_030.md).
+- Para bases anteriores, aplicar los pasos faltantes hasta 028 indicados debajo y después 029–031.
 - Si ya aplicaste hasta 027, ejecutar **solo 028_retiro_por_ausencia_con_contexto.sql** para restaurar el retiro por ausencia por jurados asignados y completar el soporte de tandas de seis.
 - Si ya aplicaste hasta 026, ejecutar 027 y 028, en orden. Los sorteos nuevos realizan clasificatorias únicamente si se supera el cupo; se conservan los sorteos y votos existentes.
 - Si ya aplicaste hasta 025, ejecutar 026, 027 y 028, en orden. La 026 permite hasta seis inscripciones por tanda y mantiene el valor predeterminado de cinco.
@@ -73,6 +74,7 @@ agregan sin rellenar autores ni timestamps históricos desconocidos.
 | 028 | Retiro por ausencia con permisos por competencia y tandas iniciadas de hasta seis |
 | 029 | Borrado físico de cuentas y competencias, limpieza y protección del administrador |
 | 030 | Nombre de usuario único y edición de la propia cuenta |
+| 031 | Nombre de equipo opcional; etiqueta derivada de los alias cuando se omite |
 
 La actualización deja inicialmente las fechas antiguas sin competencia y sin
 acceso. En una ventana de mantenimiento, aplicar todos los correctivos y luego
@@ -218,3 +220,5 @@ Ver [diagnóstico y plan](docs/IMPLEMENTACION.md) y
 Los jurados asignados pueden retirar participantes por ausencia de su tanda mientras ninguna planilla esté finalizada. El retiro se aplica a todo el grupo, conserva las demás notas y registra en auditoría privada la entrada y los borradores anteriores. La inscripción general y el sorteo histórico permanecen guardados.
 
 Cada persona elige un nombre de usuario único de 3–30 caracteres (letras sin tildes, números, punto o guion bajo; inicial alfanumérica), guardado en minúsculas. Se configura al preparar el acceso o desde Mi cuenta. El ingreso y las invitaciones siguen usando correo. Los perfiles anteriores conservan su nombre hasta que lo editen.
+
+En duplas, tríos y otros equipos el nombre del equipo es opcional. Los alias de todos los integrantes siguen siendo obligatorios. Si se omite o se borra el nombre, se usa una etiqueta como Luna / Norte / Sur en las listas, sorteos y planillas. Las inscripciones anteriores conservan sus nombres.
