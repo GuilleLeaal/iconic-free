@@ -1,6 +1,7 @@
 import { supabase } from "../../lib/supabase";
 
 export type FaseEliminatoria =
+  | "dieciseisavos"
   | "octavos"
   | "cuartos"
   | "semifinal"

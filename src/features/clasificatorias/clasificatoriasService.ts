@@ -43,7 +43,7 @@ export type TandaClasi = {
 type SorteoClasi = {
   id: string;
   plan: {
-    tipo: "octavos" | "clasificatorias";
+    tipo: "dieciseisavos" | "octavos" | "clasificatorias";
     total: number;
     clasifican?: number;
     grupos?: { nombre: string; total: number }[];

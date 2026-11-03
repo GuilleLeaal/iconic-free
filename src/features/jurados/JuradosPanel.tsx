@@ -35,6 +35,9 @@ export default function JuradosPanel({ fecha }: { fecha: Fecha }) {
   const [errorAccion, setErrorAccion] = useState("");
   const [aviso, setAviso] = useState("");
   const [intento, setIntento] = useState(0);
+  const [busqueda, setBusqueda] = useState('');
+  const [pagina, setPagina] = useState(0);
+  const [hayMas, setHayMas] = useState(false);
 
   const operacionEnCurso = useRef(false);
 
@@ -50,12 +53,13 @@ export default function JuradosPanel({ fecha }: { fecha: Fecha }) {
 
       try {
         const [cuentas, asignados] = await Promise.all([
-          listarJurados(),
+          listarJurados(fecha.competencia_id, busqueda, pagina),
           listarAsignaciones(fecha.id),
         ]);
 
         if (!cancelado) {
-          setJurados(cuentas);
+          setJurados(cuentas.filas);
+          setHayMas(cuentas.hay_mas);
           setAsignaciones(asignados);
         }
       } catch (error) {
@@ -76,7 +80,7 @@ export default function JuradosPanel({ fecha }: { fecha: Fecha }) {
     return () => {
       cancelado = true;
     };
-  }, [fecha.id, intento]);
+  }, [fecha.id, fecha.competencia_id, intento, busqueda, pagina]);
 
   async function cambiarAsignacion(
     apartado: ApartadoJurado,
@@ -149,7 +153,7 @@ export default function JuradosPanel({ fecha }: { fecha: Fecha }) {
 
       {!permiteCambios && (
         <p className="aviso-jurados">
-          La fecha ya no admite cambios en las asignaciones.
+          Las asignaciones quedan bloqueadas desde el inicio de clasis para conservar sus jurados y puntuaciones. Podés preparar vínculos para próximas fechas desde Administrar cuentas.
         </p>
       )}
 
@@ -165,6 +169,8 @@ export default function JuradosPanel({ fecha }: { fecha: Fecha }) {
         </p>
       )}
 
+      <label className="campo">Buscar jurados vinculados<input type="search" value={busqueda} onChange={e => { setBusqueda(e.target.value); setPagina(0); }} /></label>
+      <div className="acciones-formulario"><button className="boton boton-secundario" disabled={pagina === 0 || cargando} onClick={() => setPagina(p => p - 1)}>Anterior</button><span>Página {pagina + 1}</span><button className="boton boton-secundario" disabled={!hayMas || cargando} onClick={() => setPagina(p => p + 1)}>Siguiente</button></div>
       {errorCarga ? (
         <p className="mensaje-error" role="alert">
           {errorCarga} Usá “Actualizar” para volver a cargar.
@@ -180,8 +186,7 @@ export default function JuradosPanel({ fecha }: { fecha: Fecha }) {
         <>
           {jurados.length === 0 && (
             <p className="aviso-jurados">
-              Todavía no hay cuentas con rol de jurado. Crealas desde
-              Authentication en Supabase y actualizá este panel.
+              No hay jurados para esta búsqueda. Invitá o vinculá una cuenta desde Administrar cuentas y pedile que acepte el vínculo antes de asignarla.
             </p>
           )}
 
@@ -246,7 +251,7 @@ export default function JuradosPanel({ fecha }: { fecha: Fecha }) {
                           (jurado) => jurado.id === asignacion.jurado_id,
                         );
 
-                        const nombre = cuenta?.nombre || "Cuenta no disponible";
+                        const nombre = cuenta?.nombre || asignacion.perfil?.nombre || "Cuenta no disponible";
 
                         return (
                           <li key={asignacion.id}>

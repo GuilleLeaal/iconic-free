@@ -16,6 +16,7 @@ import type {
 import "./eliminatorias.css";
 
 const FASES: { id: FaseEliminatoria; nombre: string }[] = [
+  { id: "dieciseisavos", nombre: "Dieciseisavos" },
   { id: "octavos", nombre: "Octavos" },
   { id: "cuartos", nombre: "Cuartos" },
   { id: "semifinal", nombre: "Semifinal" },
@@ -179,7 +180,7 @@ export default function EliminatoriasPanel({
   const [aviso, setAviso] = useState("");
   const [intento, setIntento] = useState(0);
   const [faseSeleccionada, setFaseSeleccionada] =
-    useState<FaseEliminatoria>("octavos");
+    useState<FaseEliminatoria>(fecha.fase_inicial ?? "octavos");
 
   const operacionEnCurso = useRef(false);
 
@@ -281,7 +282,7 @@ export default function EliminatoriasPanel({
   const puedeIniciar =
     datos !== null &&
     !iniciadas &&
-    datos.sorteo?.plan.tipo === "octavos" &&
+    (datos.sorteo?.plan.tipo === "octavos" || datos.sorteo?.plan.tipo === "dieciseisavos") &&
     (datos.fecha.estado === "borrador" ||
       datos.fecha.estado === "inscripciones");
 
@@ -296,16 +297,16 @@ export default function EliminatoriasPanel({
   );
 
   const faseASortear =
-    faseSeleccionada === "cuartos" || faseSeleccionada === "semifinal"
+    (faseSeleccionada === "octavos" && fecha.fase_inicial === "dieciseisavos") || faseSeleccionada === "cuartos" || faseSeleccionada === "semifinal"
       ? faseSeleccionada
       : null;
 
-  const faseAnterior = faseASortear === "cuartos" ? "octavos" : "cuartos";
+  const faseAnterior = faseASortear === "octavos" ? "dieciseisavos" : faseASortear === "cuartos" ? "octavos" : "cuartos";
 
   const crucesAnteriores =
     datos?.cruces.filter((cruce) => cruce.fase === faseAnterior) ?? [];
 
-  const cantidadAnteriorEsperada = faseASortear === "cuartos" ? 8 : 4;
+  const cantidadAnteriorEsperada = faseASortear === "octavos" ? 16 : faseASortear === "cuartos" ? 8 : 4;
 
   const anteriorTerminada =
     crucesAnteriores.length === cantidadAnteriorEsperada &&
@@ -325,7 +326,7 @@ export default function EliminatoriasPanel({
   function sortearFase() {
     if (!faseASortear || !anteriorTerminada || !requiereSorteo) return;
 
-    const nombre = faseASortear === "cuartos" ? "cuartos" : "semifinal";
+    const nombre = faseASortear ?? "fase";
 
     if (
       !window.confirm(
@@ -368,7 +369,7 @@ export default function EliminatoriasPanel({
         <div>
           <h2>Eliminatorias</h2>
           <p className="texto-secundario">
-            Registrá quién avanza en cada cruce.
+            Organización registra el ganador de cada cruce. Las eliminatorias no se votan en la web.
           </p>
         </div>
 
@@ -413,7 +414,7 @@ export default function EliminatoriasPanel({
             {!datos?.sorteo
               ? "Generá el sorteo para preparar los cruces."
               : datos.sorteo.plan.tipo === "clasificatorias"
-                ? "Esta fecha necesita resolver las clasificatorias antes de armar octavos."
+                ? "Esta fecha necesita resolver las clasificatorias antes de armar su fase inicial."
                 : puedeIniciar
                   ? "El sorteo está listo. Al comenzar se crearán las cuatro fases."
                   : "La fecha no admite iniciar eliminatorias."}
@@ -443,7 +444,7 @@ export default function EliminatoriasPanel({
           )}
 
           <div className="selector-fases" aria-label="Fases de eliminatorias">
-            {FASES.map((fase) => (
+            {FASES.filter(f => f.id !== 'dieciseisavos' || fecha.fase_inicial === 'dieciseisavos').map((fase) => (
               <button
                 type="button"
                 key={fase.id}
@@ -477,9 +478,7 @@ export default function EliminatoriasPanel({
                   onClick={sortearFase}
                 >
                   <RefreshCw size={17} aria-hidden="true" />
-                  {faseASortear === "cuartos"
-                    ? "Sortear cuartos"
-                    : "Sortear semifinal"}
+                  Sortear {faseASortear}
                 </button>
               )}
             </div>

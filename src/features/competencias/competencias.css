@@ -1,0 +1,9 @@
+.contexto-activo { margin-bottom: 24px; }
+.administracion { margin-top: 24px; }
+.administracion details { margin: 20px 0; padding: 16px 0; border-bottom: 1px solid #343438; }
+.administracion label,.contexto-activo label { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.administracion input,.administracion select,.contexto-activo select { min-height: 44px; width: 100%; max-width: 540px; padding: 10px; color: inherit; background: #202024; border: 1px solid #555; border-radius: 8px; }
+.administracion ul { padding-left: 20px; overflow-wrap: anywhere; }
+.administracion li { margin: 14px 0; }
+.administracion button { margin: 4px; }
+.aviso-formato { font-size: 0.78rem; color: #a4a4ad; }

@@ -231,3 +231,7 @@
     flex: 1;
   }
 }
+.eliminar-fecha {
+  color: #e4a3a3;
+  margin-top: 12px;
+}

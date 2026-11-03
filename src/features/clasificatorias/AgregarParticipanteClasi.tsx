@@ -29,7 +29,7 @@ export default function AgregarParticipanteClasi({
     (t) =>
       t.estado === "en_curso" &&
       !t.participantes_bloqueados &&
-      t.entradas.length < 5,
+      t.entradas.length < (grupo.clasificatoria.fecha.maximo_tanda ?? 5),
   );
   const clave = `iconic:alta-clasi:${juradoId}:${grupo.id}`;
   const claveFormulario = `${clave}:formulario`;
@@ -295,7 +295,7 @@ export default function AgregarParticipanteClasi({
             </button>
           </div>
           <p className="ayuda-planilla-jurado">
-            Si la tanda tiene cinco inscripciones o alguna planilla finalizada,
+            Si la tanda alcanzó el máximo configurado o tiene una planilla finalizada,
             elegí otra o creá una nueva.
           </p>
         </form>

@@ -8,12 +8,16 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.test-postgres/
+test-results/
+playwright-report/
 dist
 dist-ssr
 *.local
 .env
 .env.local
 .env.*
+!.env.example
 
 # Editor directories and files
 .vscode/*

@@ -1,18 +1,19 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ArrowRight, LoaderCircle, LogOut, ShieldCheck } from "lucide-react";
-import { supabase } from "./lib/supabase";
+import { ArrowRight, AudioLines, Check, LoaderCircle, LogOut, ShieldCheck } from "lucide-react";
+import { supabase, enlaceVencido } from "./lib/supabase";
 import { useAuth } from "./hooks/useAuth";
 import "./App.css";
-import { BrowserRouter } from "react-router";
-import FechasPage from "./features/fechas/FechasPage";
-import JuradoPage from "./features/clasificatorias/JuradoPage";
+
+import Plataforma from "./features/competencias/Plataforma";
+import CompletarAcceso from "./features/competencias/CompletarAcceso";
+
 
 function Marca() {
   return (
-    <div className="marca" aria-label="Iconic Freestyle">
-      <span className="marca-nombre">ICONIC</span>
-      <span className="marca-subtitulo">FREESTYLE</span>
+    <div className="marca" aria-label="Competencias de freestyle de Uruguay">
+      <span className="marca-icono" aria-hidden="true"><AudioLines size={22} strokeWidth={1.7} /></span>
+      <span className="marca-textos"><span className="marca-nombre">COMPETENCIAS</span><span className="marca-subtitulo">FREESTYLE · URUGUAY</span></span>
     </div>
   );
 }
@@ -21,7 +22,8 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(enlaceVencido ? 'El enlace venció o no es válido. Solicitá uno nuevo o ingresá con tu contraseña.' : '');
+  const [aviso, setAviso] = useState('');
 
   async function iniciarSesion(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,13 +61,14 @@ function Login() {
         <Marca />
 
         <div className="presentacion-contenido">
-          <span className="etiqueta">ORGANIZACIÓN</span>
-          <h1>Todo listo para la fecha.</h1>
-          <p>Participantes, cruces y votaciones en un mismo lugar.</p>
+          <span className="etiqueta"><span className="punto-vivo" />GESTIÓN DE COMPETENCIAS</span>
+          <h1>Competencias<br /><em>de freestyle.</em></h1>
+          <p>Administrá fechas, participantes, jurados y resultados.</p>
+          <div className="acceso-beneficios"><span><Check size={16} /> Inscripciones y sorteos</span><span><Check size={16} /> Jurados y clasificatorias</span><span><Check size={16} /> Cruces y resultados</span></div>
         </div>
 
         <span className="presentacion-pie">
-          Acceso exclusivo de organización y jurados.
+          Freestyle · Uruguay
         </span>
       </section>
 
@@ -75,9 +78,10 @@ function Login() {
             <ShieldCheck size={25} aria-hidden="true" />
           </div>
 
-          <h2>Ingresar</h2>
+          <span className="micro-etiqueta">ACCESO A LA PLATAFORMA</span>
+          <h2>Iniciar sesión</h2>
           <p className="texto-secundario">
-            Usá el correo y la contraseña de tu cuenta.
+            Ingresá con tu correo y contraseña.
           </p>
 
           <form onSubmit={iniciarSesion}>
@@ -139,6 +143,15 @@ function Login() {
               )}
             </button>
           </form>
+          <button type="button" className="boton boton-texto recuperar-acceso" disabled={enviando} onClick={async () => {
+            if (!email.trim()) { setError('Ingresá tu correo para solicitar un enlace nuevo.'); return; }
+            setEnviando(true); setError(''); setAviso('');
+            const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: window.location.origin });
+            setEnviando(false);
+            if (error) setError('No pudimos enviar el enlace. Revisá el correo e intentá nuevamente.');
+            else setAviso('Si el correo tiene una cuenta habilitada, recibirás un enlace de acceso.');
+          }}>Recuperar acceso / solicitar enlace nuevo</button>
+          {aviso && <p role="status">{aviso}</p>}
         </div>
       </section>
     </main>
@@ -146,7 +159,7 @@ function Login() {
 }
 
 export default function App() {
-  const { session, perfil, errorPerfil, cargando, reintentarPerfil } =
+  const { session, perfil, errorPerfil, cargando, reintentarPerfil, requierePassword, terminarAcceso } =
     useAuth();
 
   const [cerrando, setCerrando] = useState(false);
@@ -189,7 +202,7 @@ export default function App() {
     <div className="aplicacion">
       <header className="cabecera">
         <Marca />
-
+        <span className="cabecera-leyenda">Gestión de competencias</span>
         <button
           className="boton boton-secundario"
           onClick={cerrarSesion}
@@ -200,7 +213,7 @@ export default function App() {
         </button>
       </header>
 
-      <main className="contenido">
+      <main className="contenido" id="contenido-principal">
         {errorSalida && (
           <p className="mensaje-error" role="alert">
             {errorSalida}
@@ -222,17 +235,7 @@ export default function App() {
             </button>
           </section>
         ) : perfil ? (
-          perfil.rol === "organizacion" ? (
-            <BrowserRouter>
-              <FechasPage />
-            </BrowserRouter>
-          ) : (
-            <JuradoPage
-              key={perfil.id}
-              juradoId={perfil.id}
-              nombre={perfil.nombre}
-            />
-          )
+          requierePassword ? <CompletarAcceso onListo={terminarAcceso} /> : <Plataforma key={perfil.id} usuarioId={perfil.id} nombre={perfil.nombre} />
         ) : null}
       </main>
     </div>
