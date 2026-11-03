@@ -7,6 +7,7 @@ import {
 } from "./resultadosClasiService";
 import type { FilaRankingClasi, RankingClasi } from "./resultadosClasiService";
 import "./resultadosClasi.css";
+import { useCompetencia } from '../competencias/ContextoCompetencia';
 
 const TAMANO_PAGINA = 20;
 const formatoPuntos = new Intl.NumberFormat("es-UY", {
@@ -14,6 +15,7 @@ const formatoPuntos = new Intl.NumberFormat("es-UY", {
 });
 
 function estadoFila(fila: FilaRankingClasi, ranking: RankingClasi): string {
+  if (fila.sin_puntuar) return "Sin puntuar";
   if (ranking.cierre)
     return ranking.cierre.clasificados.some((e) => e.id === fila.inscripcion_id)
       ? "Clasificado"
@@ -36,7 +38,8 @@ function CierreClasificatorias({
   bloqueado: boolean;
   onConfirmar: (ganadores: string[], nota: string) => Promise<void>;
 }) {
-  const clave = `iconic:repechaje:${ranking.clasificatoria_id}:${ranking.version}`;
+  const { usuarioId } = useCompetencia();
+  const clave = `iconic:repechaje:${usuarioId}:${ranking.clasificatoria_id}:${ranking.version}`;
   const [borrador, setBorrador] = useState<{
     ganadores: string[];
     nota: string;
@@ -147,7 +150,7 @@ function CierreClasificatorias({
         </>
       ) : (
         <p>
-          Ya están definidos los {ranking.clasifican} clasificados. No hay
+          Ya están definidos los {ranking.efectivos ?? ranking.clasifican} clasificados. No hay
           empate entre quienes entran y quienes quedan afuera.
         </p>
       )}
@@ -160,12 +163,12 @@ function CierreClasificatorias({
       <button
         type="button"
         className="boton boton-principal"
-        disabled={bloqueado || !seleccionValida}
+        disabled={bloqueado || !seleccionValida || ranking.efectivos < 2}
         onClick={() => {
           if (bloqueado || !seleccionValida) return;
           if (
             !window.confirm(
-              `¿Confirmar los ${ranking.clasifican} clasificados y sortear octavos? Se cerrarán las clasis y las altas. La clasificación y los cruces quedarán guardados.`,
+              `¿Confirmar los ${ranking.efectivos ?? ranking.clasifican} clasificados (de ${ranking.clasifican} cupos) e iniciar ${ranking.fase_inicial ?? "octavos"}? Se cerrarán las clasis y las altas. La clasificación y los cruces quedarán guardados.`,
             )
           )
             return;
@@ -173,8 +176,9 @@ function CierreClasificatorias({
         }}
       >
         <Check size={17} aria-hidden="true" />
-        Cerrar clasis y sortear octavos
+        Cerrar clasis e iniciar eliminatorias
       </button>
+      {ranking.efectivos < 2 && <p className="mensaje-error">Se necesitan al menos dos inscripciones puntuadas para iniciar eliminatorias. Las planillas pueden finalizarse igualmente.</p>}
       <p className="ayuda-resultados-clasi">
         La confirmación guarda los resultados y el sorteo en una sola operación.
         Revisá el corte antes de confirmar.
@@ -190,6 +194,7 @@ export default function ResultadosClasiPanel({
   fecha: Fecha;
   onIrEliminatorias: () => void;
 }) {
+  const { usuarioId } = useCompetencia();
   const [ranking, setRanking] = useState<RankingClasi | null>(null);
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
@@ -237,7 +242,7 @@ export default function ResultadosClasiPanel({
       await cerrarClasificatorias(ranking, ganadores, nota);
       try {
         localStorage.removeItem(
-          `iconic:repechaje:${ranking.clasificatoria_id}:${ranking.version}`,
+          `iconic:repechaje:${usuarioId}:${ranking.clasificatoria_id}:${ranking.version}`,
         );
       } catch {
         /* El cierre confirmado ya está guardado en la base. */
@@ -302,21 +307,23 @@ export default function ResultadosClasiPanel({
       {!cargando && !errorCarga && !ranking && (
         <p className="texto-secundario">
           Esta fecha todavía no tiene clasificatorias iniciadas. Si pasa
-          directamente a octavos, podés continuar desde Eliminatorias.
+          directamente a su fase inicial, podés continuar desde Eliminatorias.
         </p>
       )}
       {ranking && (
         <>
           <div className="resumen-resultados-clasi">
             <span>
-              {ranking.completos}/{ranking.total} inscripciones puntuadas
+              {ranking.puntuados ?? ranking.completos}/{ranking.total} inscripciones con puntuación
             </span>
             <span>
               {ranking.tandas_finalizadas}/{ranking.tandas_total} tandas
               finalizadas
             </span>
-            <span>{ranking.clasifican} cupos para octavos</span>
+            <span>{ranking.completos}/{ranking.total} con planillas entregadas</span>
+            <span>{ranking.clasifican} cupos para {ranking.fase_inicial ?? 'octavos'}</span>
           </div>
+          {!ranking.cierre && ranking.puntuados < ranking.clasifican && <p className="aviso-formato">Hay {ranking.puntuados} inscripciones puntuadas para {ranking.clasifican} cupos. Podés ajustar el formato antes de confirmar el cierre o conservarlo con pases libres.</p>}
           <p className="ayuda-resultados-clasi">
             Se suman los puntos de todos los jurados. Solo cuentan las planillas
             finalizadas.
@@ -386,7 +393,7 @@ export default function ResultadosClasiPanel({
                               {j.total === null
                                 ? j.estado === "borrador"
                                   ? "Borrador"
-                                  : "Pendiente"
+                                  : j.estado === "finalizada" ? "Sin puntuar" : "Pendiente"
                                 : formatoPuntos.format(j.total)}
                             </li>
                           ))}
@@ -404,6 +411,7 @@ export default function ResultadosClasiPanel({
                     </td>
                     <td>
                       {estadoFila(fila, ranking)}
+                      {fila.casillas_vacias && fila.puntos !== null && <small>Hay casillas sin puntuar</small>}
                       <small>
                         {fila.jurados_finalizados}/{fila.jurados_esperados}{" "}
                         planillas
@@ -439,7 +447,7 @@ export default function ResultadosClasiPanel({
               <h3>Clasificación confirmada</h3>
               <p>
                 Los {ranking.cierre.clasificados.length} clasificados y los
-                octavos quedaron guardados.
+                el cuadro quedaron guardados.
               </p>
               {ranking.cierre.nota_desempate && (
                 <p>Repechaje: {ranking.cierre.nota_desempate}</p>

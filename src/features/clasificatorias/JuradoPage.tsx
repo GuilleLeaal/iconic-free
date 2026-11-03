@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Check, LoaderCircle, RefreshCw, Save } from "lucide-react";
+import { Check, LoaderCircle, RefreshCw, Save, UserMinus } from "lucide-react";
 
 import {
   cargarGruposJurado,
@@ -216,15 +216,10 @@ function PlanillaJurado({
       return;
     }
 
-    if (finalizar && puntos.some((punto) => punto === null)) {
-      setError("Completá todas las casillas antes de finalizar.");
-      return;
-    }
-
     if (
       finalizar &&
       !window.confirm(
-        "¿Finalizar tu planilla? Después no podrás cambiar las puntuaciones.",
+        `¿Finalizar tu planilla? Quedan ${puntos.filter(p => p === null).length} casillas vacías. Sin puntuar: ${tanda.entradas.filter(e => editor.puntuaciones.find(f => f.inscripcion_id === e.id)?.casillas.every(p => p === null)).map(e => e.nombre).join(", ") || "nadie"}. Después no podrás cambiar las puntuaciones.`,
       )
     ) {
       return;
@@ -267,43 +262,22 @@ function PlanillaJurado({
   }
 
   async function retirar(inscripcionId: string, nombre: string) {
-    if (
-      !tanda ||
-      bloqueado ||
-      guardadoEnCurso.current ||
-      tanda.participantes_bloqueados ||
-      tanda.estado !== "en_curso" ||
-      grupo.clasificatoria.estado !== "en_curso"
-    )
-      return;
-    if (errorBorrador && pendiente) {
-      setError("Guardá el borrador antes de retirar un participante.");
-      return;
-    }
-    if (
-      !window.confirm(
-        `¿Retirar a "${nombre}" por ausencia? Saldrá de esta tanda y del ranking para todos los jurados. La inscripción y el historial se conservan.`,
-      )
-    )
-      return;
+    if (!puedeEditar || !tanda || tanda.participantes_bloqueados || guardadoEnCurso.current) return;
+    if (!window.confirm(`¿Retirar a ${nombre} por ausencia de esta tanda? El cambio se aplica a todos los jurados del grupo. Las notas de los demás participantes se conservan.`)) return;
     if (!persistir(planilla)) {
-      setError(
-        "No pudimos conservar el borrador. Guardalo antes de retirar un participante.",
-      );
+      setError('No se pudieron conservar tus cambios en este navegador. Guardá el borrador antes de retirar al participante.');
       return;
     }
     guardadoEnCurso.current = true;
     setGuardando(true);
     onOcupado(true);
-    setError("");
-    setAviso("");
+    setError('');
+    setAviso('');
     try {
       await retirarParticipanteClasi(tanda.id, inscripcionId, tanda.version);
-      setAviso(`${nombre} fue retirado de la tanda.`);
-    } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "No pudimos confirmar el retiro.",
-      );
+      setAviso('Participante retirado por ausencia.');
+    } catch (errorRetiro) {
+      setError(errorRetiro instanceof Error ? errorRetiro.message : 'No pudimos confirmar el retiro.');
     } finally {
       guardadoEnCurso.current = false;
       setGuardando(false);
@@ -312,8 +286,7 @@ function PlanillaJurado({
     }
   }
 
-  if (!tanda) return null;
-
+  if (!tanda) return <p className="espera-jurado">Seleccioná una tanda para puntuar.</p>;
   return (
     <div className="planilla-jurado">
       <p className="estado-planilla-jurado">
@@ -357,21 +330,12 @@ function PlanillaJurado({
         return (
           <section className="participante-planilla-jurado" key={entrada.id}>
             <h3>{entrada.nombre}</h3>
-            {!tanda.participantes_bloqueados &&
-              tanda.estado === "en_curso" &&
-              grupo.clasificatoria.estado === "en_curso" && (
-                <button
-                  type="button"
-                  className="boton boton-secundario retirar-participante-clasi"
-                  disabled={
-                    bloqueado || guardando || (errorBorrador && pendiente)
-                  }
-                  aria-label={`Retirar a ${entrada.nombre} por ausencia`}
-                  onClick={() => void retirar(entrada.id, entrada.nombre)}
-                >
-                  Retirar por ausencia
-                </button>
-              )}
+
+            {!finalizada && !tanda.participantes_bloqueados && tanda.estado === 'en_curso' && grupo.clasificatoria.estado === 'en_curso' && (
+              <button type="button" className="boton boton-secundario retirar-participante-clasi" disabled={!puedeEditar} aria-label={`Retirar por ausencia a ${entrada.nombre}`} onClick={() => void retirar(entrada.id, entrada.nombre)}>
+                <UserMinus size={16} aria-hidden="true" />Retirar por ausencia
+              </button>
+            )}
 
             {entrada.integrantes.length > 1 && (
               <p className="texto-secundario">
@@ -407,7 +371,7 @@ function PlanillaJurado({
             <p className="total-planilla-jurado">
               {completadas}/{puntos.length} casillas completas
               {" · "}
-              {completadas === puntos.length ? "Total" : "Parcial"}: {total}
+              {completadas === 0 ? 'Sin puntuar' : `${completadas === puntos.length ? 'Total' : 'Parcial'}: ${total}`}
             </p>
           </section>
         );
@@ -488,9 +452,11 @@ function PlanillaJurado({
 export default function JuradoPage({
   juradoId,
   nombre,
+  competenciaId,
 }: {
   juradoId: string;
   nombre: string;
+  competenciaId: string;
 }) {
   const [grupos, setGrupos] = useState<GrupoJuradoConTandas[]>([]);
   const [grupoId, setGrupoId] = useState("");
@@ -500,7 +466,7 @@ export default function JuradoPage({
   const [borradorSeguro, setBorradorSeguro] = useState(true);
   const [error, setError] = useState("");
   const [intento, setIntento] = useState(0);
-  const claveSeleccion = `iconic:seleccion-clasi:${juradoId}`;
+  const claveSeleccion = `iconic:seleccion-clasi:${juradoId}:${competenciaId}`;
 
   function actualizar() {
     setCargando(true);
@@ -523,7 +489,7 @@ export default function JuradoPage({
       setCargando(true);
       setError("");
       try {
-        const datos = await cargarGruposJurado(juradoId);
+        const datos = await cargarGruposJurado(juradoId, competenciaId);
         if (!cancelado) setGrupos(datos);
       } catch (e) {
         if (!cancelado)
@@ -540,7 +506,7 @@ export default function JuradoPage({
     return () => {
       cancelado = true;
     };
-  }, [juradoId, intento]);
+  }, [juradoId, competenciaId, intento]);
 
   useEffect(() => {
     if (cargando || error || !grupos.length) return;

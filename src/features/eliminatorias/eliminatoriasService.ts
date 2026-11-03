@@ -1,7 +1,7 @@
 import { supabase } from "../../lib/supabase";
 import type { Fecha } from "../fechas/fechasService";
 
-export type FaseEliminatoria = "octavos" | "cuartos" | "semifinal" | "final";
+export type FaseEliminatoria = "dieciseisavos" | "octavos" | "cuartos" | "semifinal" | "final";
 
 export type EntradaEliminatoria = {
   id: string;
@@ -28,7 +28,7 @@ type SorteoActual = {
   id: string;
   eliminatorias_aleatorias: boolean;
   plan: {
-    tipo: "octavos" | "clasificatorias";
+    tipo: "dieciseisavos" | "octavos" | "clasificatorias";
   };
 };
 
@@ -93,7 +93,7 @@ export async function confirmarGanador(
 
 export async function sortearFaseEliminatoria(
   fechaId: string,
-  fase: "cuartos" | "semifinal",
+  fase: "octavos" | "cuartos" | "semifinal",
 ): Promise<void> {
   const { error } = await supabase.rpc("sortear_fase_eliminatoria", {
     p_fecha_id: fechaId,

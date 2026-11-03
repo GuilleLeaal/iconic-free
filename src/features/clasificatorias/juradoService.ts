@@ -27,6 +27,7 @@ export type GrupoJurado = {
       nombre: string;
       estado: string;
       integrantes_por_equipo: number;
+      maximo_tanda: number | null;
     };
   };
 };
@@ -45,6 +46,7 @@ export type GrupoJuradoConTandas = {
 
 export async function cargarGruposJurado(
   juradoId: string,
+  competenciaId: string,
 ): Promise<GrupoJuradoConTandas[]> {
   const grupos: GrupoJurado[] = [];
   const tamanoPagina = 500;
@@ -60,11 +62,12 @@ export async function cargarGruposJurado(
           id,
           estado,
           casillas,
-          fecha:fechas!inner(id, nombre, estado, integrantes_por_equipo)
+          fecha:fechas!inner(id, nombre, estado, integrantes_por_equipo, maximo_tanda)
         )
       `,
       )
       .eq("clasificatoria.fecha.estado", "en_curso")
+      .eq("clasificatoria.fecha.competencia_id", competenciaId)
       .order("id")
       .range(desde, desde + tamanoPagina - 1)
       .returns<GrupoJurado[]>();
@@ -140,6 +143,15 @@ export type SolicitudAltaClasi = {
   integrantes: string[];
 };
 
+export async function retirarParticipanteClasi(tandaId: string, inscripcionId: string, version: number): Promise<void> {
+  const { error } = await supabase.rpc('retirar_participante_clasi', {
+    p_tanda_id: tandaId,
+    p_inscripcion_id: inscripcionId,
+    p_version: version,
+  });
+  if (error) throw new Error(error.code === 'P0001' ? error.message : 'No pudimos confirmar el retiro. Actualizá antes de reintentar.');
+}
+
 export type ResultadoAltaClasi = {
   inscripcion_id: string;
   tanda_id: string;
@@ -184,23 +196,4 @@ export async function agregarParticipanteClasi(
     );
   }
   return data as ResultadoAltaClasi;
-}
-
-export async function retirarParticipanteClasi(
-  tandaId: string,
-  inscripcionId: string,
-  version: number,
-): Promise<void> {
-  const { error } = await supabase.rpc("retirar_participante_clasi", {
-    p_tanda_id: tandaId,
-    p_inscripcion_id: inscripcionId,
-    p_version: version,
-  });
-  if (error) {
-    throw new Error(
-      error.code === "P0001"
-        ? error.message
-        : "No pudimos confirmar el retiro. Actualizá la tanda para comprobar su estado.",
-    );
-  }
 }

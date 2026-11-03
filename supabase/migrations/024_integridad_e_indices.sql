@@ -1,0 +1,15 @@
+begin;
+alter table public.sorteos add constraint sorteo_id_fecha_unique unique(id,fecha_id);
+alter table public.clasificatorias add constraint clasi_id_sorteo_unique unique(id,sorteo_id);
+alter table public.clasificatorias add constraint clasi_sorteo_fecha_fk foreign key(sorteo_id,fecha_id) references public.sorteos(id,fecha_id);
+alter table public.cruces_eliminatorias add constraint cruce_id_fecha_unique unique(id,fecha_id);
+alter table public.cruces_eliminatorias add constraint cruce_sorteo_fecha_fk foreign key(sorteo_id,fecha_id) references public.sorteos(id,fecha_id);
+alter table public.sorteos_fases_eliminatorias add constraint fase_sorteo_fecha_fk foreign key(sorteo_id,fecha_id) references public.sorteos(id,fecha_id);
+alter table public.historial_resultados_eliminatorias add constraint historial_cruce_fecha_fk foreign key(cruce_id,fecha_id) references public.cruces_eliminatorias(id,fecha_id);
+alter table public.cierres_clasificatorias add constraint cierre_clasi_sorteo_fk foreign key(clasificatoria_id,sorteo_id) references public.clasificatorias(id,sorteo_id);
+create index perfiles_nombre_id_idx on public.perfiles(nombre,id);
+create index competencias_nombre_id_idx on public.competencias(nombre,id);
+create index vinculos_directorio_idx on public.vinculos_competencia(competencia_id,rol,estado,usuario_id);
+create index invitaciones_correo_idx on private.invitaciones(email,estado,vence_en);
+create index historial_configuracion_fecha_idx on public.historial_configuracion_fecha(fecha_id,creado_en desc);
+commit;

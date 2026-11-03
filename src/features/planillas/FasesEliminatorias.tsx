@@ -22,6 +22,7 @@ type EstadoEditor = {
 type SeccionRondas = "rondas" | "replica";
 
 const FASES: { id: FaseEliminatoria; nombre: string }[] = [
+  { id: "dieciseisavos", nombre: "Dieciseisavos" },
   { id: "octavos", nombre: "Octavos" },
   { id: "cuartos", nombre: "Cuartos" },
   { id: "semifinal", nombre: "Semifinal" },
@@ -600,7 +601,7 @@ export default function FasesEliminatorias({ fecha }: { fecha: Fecha }) {
         Cada fase tiene sus propias rondas, casillas y configuración de réplica.
       </p>
 
-      {FASES.map((fase) => (
+      {FASES.filter(fase => fase.id !== 'dieciseisavos' || fecha.fase_inicial === 'dieciseisavos').map((fase) => (
         <details className="desplegable-fase" key={`${fecha.id}:${fase.id}`}>
           <summary>{fase.nombre}</summary>
           <EditorFase fecha={fecha} fase={fase.id} />
