@@ -275,21 +275,27 @@ export default function FechasPage() {
     };
   }, [intento, competencia.id]);
 
-  function seleccionarFecha(id: string | null) {
+  function seleccionarFecha(id: string | null, reemplazar = false) {
     setParams((actuales) => {
       const siguientes = new URLSearchParams(actuales);
+      siguientes.delete("vista");
 
       if (id) siguientes.set("fecha", id);
       else siguientes.delete("fecha");
 
       return siguientes;
-    });
+    }, { replace: reemplazar });
   }
 
   function fechaCreada(fecha: Fecha) {
     setFechas((actuales) => [fecha, ...actuales]);
     setMostrarFormulario(false);
-    seleccionarFecha(fecha.id);
+    setBusqueda('');
+    setFiltroEstado('');
+    setErrorEliminacion('');
+    setAviso(`Fecha "${fecha.nombre}" creada.`);
+    seleccionarFecha(null, true);
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }
 
   async function borrarFecha(fecha: Fecha) {

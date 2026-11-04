@@ -18,7 +18,7 @@ Fecha de trabajo: 3 de noviembre de 2026, America/Montevideo.
 - `npm run lint`: sin errores; advertencias de efectos React en componentes
   existentes. Vite informa un bundle principal de aproximadamente 616 kB antes
   de gzip.
-- `npm run test:ui`: cuarenta y dos pruebas pasan en Chromium desktop y Pixel 7,
+- `npm run test:ui`: cuarenta y cuatro pruebas pasan en Chromium desktop y Pixel 7,
   mediante fixtures interceptados en localhost. Incluyen un recorrido visual de acceso, fechas, inscripciones, sorteos, clasificatorias, resultados, eliminatorias, configuración, cuentas y planillas; búsqueda, navegación y ausencia de desbordes horizontales.
 - `npm run test:concurrencia`: reconstrucción en PostgreSQL 18.6 nativo, Windows
   x64; conexiones distintas para voto/configuración, cierre con versión vieja
@@ -72,3 +72,5 @@ La 028 verifica retiros con jurados asignados y acceso activo, rechazo de actore
 029–030: seis pruebas nuevas comprueban borrado físico de Auth/perfil/dependencias, reinvitación del mismo correo y reutilización del nombre de usuario con UUID nuevo; conservación de eventos sin autor al borrar un organizador; borrado completo de una competencia con clasificatorias y torneo finalizado, sin afectar cuentas u otra competencia; bloqueo atómico por envío en curso; protección del administrador; ACL y nombres únicos normalizados. Las pruebas nativas agregan carreras voto/borrado de usuario y competencia. La interfaz agrega diez escenarios (escritorio/celular) de confirmación por texto, cancelación, error/reintento, limpieza de selección, controles exclusivos de administración, Mi cuenta y preparación del acceso con nombre de usuario.
 
 031: dos pruebas SQL cubren altas y edición con nombre null/vacío/espacios o personalizado en duplas, tríos y equipos de cinco; preservación de filas anteriores; alias obligatorios y únicos; retiro/reactivación; individual sin cambios; alta tardía sin nombre con reintento idempotente y conservación de cero/borradores. Ocho pruebas de navegador (duplas y tríos, escritorio y celular) cubren alta, edición de alias con nombre derivado y alta tardía preservando notas locales.
+
+Resultados móviles: el ranking se muestra como tarjetas hasta 760 px; la tabla mantiene su estructura en escritorio. Se verifica ausencia de desbordes de página, tabla y filas a 320/393/640/760 px, nombres largos de equipos y jurados, detalle desplegado de cinco jurados, puntos decimales/cero, estado sin puntuar y búsqueda. No se cambian cálculos ni RPC de resultados.

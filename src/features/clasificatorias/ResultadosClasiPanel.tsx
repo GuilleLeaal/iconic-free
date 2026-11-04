@@ -378,10 +378,10 @@ export default function ResultadosClasiPanel({
                         : undefined
                     }
                   >
-                    <td>{fila.puesto ?? "—"}</td>
-                    <th scope="row">
+                    <td className="puesto-ranking">{fila.puesto ?? "—"}</td>
+                    <th scope="row" className="participante-ranking">
                       <span>{fila.entrada.nombre}</span>
-                      {fila.entrada.integrantes.length > 1 && (
+                      {fila.entrada.integrantes.length > 1 && fila.entrada.nombre !== fila.entrada.integrantes.join(' / ') && (
                         <small>{fila.entrada.integrantes.join(" · ")}</small>
                       )}
                       <details>
@@ -389,28 +389,29 @@ export default function ResultadosClasiPanel({
                         <ul>
                           {fila.detalle_jurados.map((j) => (
                             <li key={j.jurado_id}>
-                              {j.nombre}:{" "}
-                              {j.total === null
+                              <span>{j.nombre}</span>
+                              <strong>{j.total === null
                                 ? j.estado === "borrador"
                                   ? "Borrador"
                                   : j.estado === "finalizada" ? "Sin puntuar" : "Pendiente"
-                                : formatoPuntos.format(j.total)}
+                                : formatoPuntos.format(j.total)}</strong>
                             </li>
                           ))}
                         </ul>
                       </details>
                     </th>
-                    <td>
-                      {fila.grupo}
+                    <td className="grupo-ranking">
+                      <span className="etiqueta-grupo-ranking" aria-hidden="true">Grupo </span>{fila.grupo}
                       <small>Tanda {fila.tanda}</small>
                     </td>
                     <td className="puntos-ranking">
+                      <span className="etiqueta-puntos-ranking" aria-hidden="true">Puntos</span>
                       {fila.puntos === null
                         ? "—"
                         : formatoPuntos.format(fila.puntos)}
                     </td>
-                    <td>
-                      {estadoFila(fila, ranking)}
+                    <td className="estado-ranking">
+                      <span className="estado-ranking-texto">{estadoFila(fila, ranking)}</span>
                       {fila.casillas_vacias && fila.puntos !== null && <small>Hay casillas sin puntuar</small>}
                       <small>
                         {fila.jurados_finalizados}/{fila.jurados_esperados}{" "}
@@ -446,8 +447,7 @@ export default function ResultadosClasiPanel({
             <div className="clasificacion-confirmada" role="status">
               <h3>Clasificación confirmada</h3>
               <p>
-                Los {ranking.cierre.clasificados.length} clasificados y los
-                el cuadro quedaron guardados.
+                Se guardaron los {ranking.cierre.clasificados.length} clasificados y el cuadro.
               </p>
               {ranking.cierre.nota_desempate && (
                 <p>Repechaje: {ranking.cierre.nota_desempate}</p>

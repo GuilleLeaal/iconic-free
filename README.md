@@ -92,7 +92,7 @@ anteriores únicamente como organizadores de Iconic. El UUID indicado es el
 al administrador. Su ejecución está revocada para la API. No se infiere identidad
 por nombre, metadata ni antigüedad.
 
-La desactivación conserva cuentas, votos y resultados. Los nuevos botones de eliminación definitiva de administración global borran físicamente la cuenta y sus dependencias, o la competencia y todos sus recursos. No hay un reset incluido. Las futuras
+La desactivación conserva cuentas, votos y resultados. Los nuevos botones de eliminación definitiva de administración global borran físicamente la cuenta y sus dependencias, o la competencia y todos sus recursos. La limpieza manual completa está en `supabase/limpiar-datos-conservar-admin.sql`: conserva únicamente la cuenta de administración global y vacía los datos de la app. No forma parte de las migraciones. Las futuras
 fechas deben indicar su competencia. Las fechas antiguas conservan sorteos y
 configuración; sus campos nuevos no reciben valores retroactivos. Para generar
 un nuevo sorteo deben elegirse explícitamente las opciones. Los cierres

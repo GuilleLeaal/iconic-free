@@ -105,3 +105,67 @@ test('pantalla de acceso legible y sin desbordes',async({page},testInfo)=>{
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.screenshot({path:testInfo.outputPath('00-acceso.png'),fullPage:true});
 });
+
+test('fecha creada vuelve al inicio y no hereda pestañas ni filtros anteriores',async({page})=>{
+ await escenario(page);
+ let nueva:typeof fecha|null=null;
+ await page.route('http://127.0.0.1:54321/rest/v1/fechas*',async route=>{
+  if(route.request().method()==='OPTIONS') return route.fulfill({status:204,headers:{'access-control-allow-origin':'*','access-control-allow-headers':'*','access-control-allow-methods':'*'}});
+  const url=new URL(route.request().url());
+  if(route.request().method()==='POST') nueva={...fecha,...route.request().postDataJSON(),id:'10000000-0000-4000-8000-000000000009',estado:'borrador'};
+  const lista=nueva?[nueva,...fechas]:fechas;
+  const data=route.request().method()==='POST'?nueva:url.searchParams.has('id')?lista.find(f=>f.id===url.searchParams.get('id')?.slice(3)):lista;
+  await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(data),headers:{'access-control-allow-origin':'*'}});
+ });
+ await page.goto('/?fecha='+fechaId+'&vista=eliminatorias');
+ const nav=page.getByRole('navigation',{name:'Organización de la fecha'});
+ await expect(nav.getByRole('button',{name:'Eliminatorias',exact:true})).toHaveAttribute('aria-current','page');
+ await page.getByRole('button',{name:'Todas las fechas',exact:true}).click();
+ expect(new URL(page.url()).search).toBe('');
+ await page.getByLabel('Buscar fecha',{exact:true}).fill('aniversario');
+ await page.getByRole('combobox',{name:'Estado de las fechas',exact:true}).selectOption('finalizada');
+ await page.getByRole('button',{name:'Nueva fecha',exact:true}).click();
+ await page.getByLabel('Nombre',{exact:true}).fill('Fecha recién creada');
+ await page.getByRole('button',{name:'Crear fecha',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Fechas',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Fecha recién creada',exact:true})).toBeVisible();
+ await expect(page.getByRole('status')).toContainText('Fecha "Fecha recién creada" creada.');
+ await expect(page.getByLabel('Buscar fecha',{exact:true})).toHaveValue('');
+ await expect(page.getByRole('combobox',{name:'Estado de las fechas',exact:true})).toHaveValue('');
+ expect(new URL(page.url()).search).toBe('');
+ await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBe(0);
+ await page.getByRole('button',{name:'Abrir Fecha recién creada',exact:true}).click();
+ await expect(nav.getByRole('button',{name:'Inscripciones',exact:true})).toHaveAttribute('aria-current','page');
+ expect(new URL(page.url()).searchParams.has('vista')).toBe(false);
+});
+
+test('resultados se ajustan al celular con equipos largos y detalle de cinco jurados',async({page},testInfo)=>{
+ await escenario(page);
+ const nombreLargo='LunaDelSurSinEspaciosParaComprobarElAncho / Norte de Montevideo / Cauce';
+ await page.route('http://127.0.0.1:54321/rest/v1/rpc/consultar_ranking_clasificatoria',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+  clasificatoria_id:clasi.id,fecha_id:fechaId,estado:'en_curso',fecha_estado:'en_curso',clasifican:16,efectivos:12,puntuados:11,fase_inicial:'octavos',casillas:clasi.casillas,total:12,completos:11,lista_para_cerrar:true,jurados_consistentes:true,tandas_total:4,tandas_finalizadas:3,
+  filas:inscripciones.map((e,i)=>({inscripcion_id:e.id,entrada:{...e,nombre:i===0?nombreLargo:e.nombre,integrantes:i===0?['LunaDelSurSinEspaciosParaComprobarElAncho','Norte de Montevideo','Cauce']:e.integrantes},grupo:'A',tanda:Math.floor(i/3)+1,puesto:i===2?null:i+1,completa:i!==3,sin_puntuar:i===2,casillas_vacias:i===3,puntos:i===0?59.75:i===1?0:i===2?null:23-i*.5,jurados_esperados:5,jurados_finalizados:i===3?4:5,detalle_jurados:Array.from({length:5},(_,j)=>({jurado_id:'jurado-'+j,nombre:j===0?'NombreDeJuradoLargoSinEspaciosParaProbarElDetalle':'Jurado '+(j+1),estado:'finalizada',total:j===0?0:j===1?null:11.5}))})),
+  corte:{puntos:0,directos:inscripciones.slice(4).map(e=>e.id),empatados:inscripciones.slice(0,2).map(e=>e.id),cupos:1,requiere_desempate:true},version:'movil-1',cierre:null,
+ }),headers:{'access-control-allow-origin':'*'}}));
+ await page.getByRole('button',{name:'Abrir Edición de noviembre',exact:true}).click();
+ await page.getByRole('navigation',{name:'Organización de la fecha'}).getByRole('button',{name:'Resultados',exact:true}).click();
+ const tabla=page.getByRole('region',{name:'Tabla global'});
+ await expect(tabla.locator('tbody tr')).toHaveCount(12);
+ await tabla.locator('summary').first().click();
+ await expect(tabla.locator('details[open] li')).toHaveCount(5);
+ for(const width of [320,393,640,760]) {
+  await page.setViewportSize({width,height:850});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  expect(await tabla.evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
+  for(const fila of await tabla.locator('tbody tr').all()) expect(await fila.evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
+  await expect(tabla.locator('tbody tr').first().locator('.puntos-ranking')).toContainText('59,75');
+  await expect(tabla.locator('tbody tr').nth(1).locator('.puntos-ranking')).toContainText('0');
+  await expect(tabla.locator('tbody tr').nth(2).locator('.estado-ranking')).toContainText('Sin puntuar');
+  if(width===393) await tabla.locator('tbody tr').first().screenshot({path:testInfo.outputPath('resultado-equipo-393.png')});
+ }
+ await page.setViewportSize({width:1280,height:900});
+ expect(await tabla.locator('table').evaluate(e=>getComputedStyle(e).display)).toBe('table');
+ await page.getByLabel('Buscar participante o equipo',{exact:true}).fill('LunaDelSur');
+ await expect(tabla.locator('tbody tr')).toHaveCount(1);
+ await expect(tabla.locator('tbody tr').first()).toContainText(nombreLargo);
+});
