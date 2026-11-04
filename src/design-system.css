@@ -54,7 +54,8 @@ svg { flex-shrink: 0; }
 }
 .cabecera { min-height: 82px; padding: 18px max(28px, calc((100vw - 1400px) / 2)); background: #10151d; border-color: #232c38; gap: 24px; }
 .marca { display: inline-flex; flex-direction: row; gap: 13px; align-items: center; flex-shrink: 0; }
-.marca-icono { display: grid; place-items: center; width: 40px; height: 42px; border: 1px solid #e4bd7738; border-radius: 11px; color: var(--acento); background: #e4bd7708; }
+.marca-icono { position: relative; display: block; flex-shrink: 0; width: 68px; height: 40px; overflow: hidden; }
+.marca-icono img { position: absolute; top: 50%; left: 50%; width: 120%; max-width: none; height: auto; transform: translate(-50%, -51%); }
 .marca-textos { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
 .marca-nombre { font-size: 16px; font-weight: 800; letter-spacing: 1.1px; line-height: 1.1; }
 .marca-subtitulo { padding: 0; font-size: 8px; letter-spacing: 2.3px; color: var(--secundario); }
@@ -372,18 +373,18 @@ summary { cursor: pointer; color: #d4dbe6; font-size: 13px; font-weight: 600; li
 }
 
 /* Login */
-.acceso { grid-template-columns: minmax(0,1.06fr) minmax(0,1fr); background: #0c1016; }
-.presentacion { padding: clamp(36px,5.5vw,88px); background: radial-gradient(ellipse at 10% 75%,#e4bd7708,transparent 65%),#111721; border-color: #283345; }
-.presentacion-contenido { margin-block: 70px; max-width: 530px; }
+.acceso { grid-template-columns: minmax(0,1.06fr) minmax(0,1fr); grid-template-rows: minmax(0,1fr); min-height: 100dvh; background: #0c1016; }
+.presentacion { min-width: 0; padding: clamp(20px,5dvh,64px) clamp(24px,5.5vw,88px); background: radial-gradient(ellipse at 10% 75%,#e4bd7708,transparent 65%),#111721; border-color: #283345; }
+.presentacion-contenido { margin-block: clamp(20px,6dvh,70px); max-width: 530px; }
 .presentacion-contenido .etiqueta { display: flex; align-items: center; gap: 12px; font-size: 9px; letter-spacing: 1.8px; color: #a1adbd; }
-.presentacion h1 { font-size: clamp(42px,4.6vw,68px); font-weight: 650; letter-spacing: -2.6px; line-height: 1.12; margin-top: 26px; }
+.presentacion h1 { font-size: clamp(36px,min(4.6vw,7.5dvh),68px); font-weight: 650; letter-spacing: -2.6px; line-height: 1.12; margin-top: 26px; }
 .presentacion h1 em { color: var(--acento); font-family: Georgia, "Times New Roman", serif; font-weight: 400; letter-spacing: -1.8px; }
 .presentacion-contenido > p { font-size: 16px; color: #9eabbe; margin-top: 25px; line-height: 1.8; max-width: 390px; }
-.acceso-beneficios { display: grid; gap: 14px; margin-top: 40px; color: #a5b2c5; font-size: 12px; }
+.acceso-beneficios { display: grid; gap: clamp(8px,1.5dvh,14px); margin-top: clamp(16px,4dvh,40px); color: #a5b2c5; font-size: 12px; }
 .acceso-beneficios > span { display: flex; gap: 11px; align-items: center; }
 .acceso-beneficios svg { color: #c5aa75; }
 .presentacion-pie { font-size: 11px; color: #68798f; }
-.acceso-formulario { padding: 52px 36px; }
+.acceso-formulario { min-width: 0; padding: clamp(16px,4dvh,52px) clamp(20px,3vw,36px); }
 .tarjeta-login { max-width: 380px; }
 .icono-acceso { background: #e4bd7709; color: var(--acento); border-color: #e4bd7730; width: 48px; height: 48px; border-radius: 13px; margin-bottom: 28px; }
 .tarjeta-login .micro-etiqueta { margin-bottom: 9px; font-size: 9px; }
@@ -422,8 +423,7 @@ summary { cursor: pointer; color: #d4dbe6; font-size: 13px; font-weight: 600; li
   :root { font-size: 14px; }
   .cabecera { padding: 17px 18px; min-height: 73px; gap: 12px; }
   .marca { gap: 9px; }
-  .marca-icono { width: 33px; height: 36px; border-radius: 9px; }
-  .marca-icono svg { width: 19px; }
+  .marca-icono { width: 50px; height: 30px; }
   .marca-nombre { font-size: 12px; letter-spacing: .9px; }
   .marca-subtitulo { font-size: 6px; letter-spacing: 1.7px; }
   .cabecera > .boton { font-size: 10px; padding: 8px 10px; gap: 6px; min-height: 36px; }
@@ -521,19 +521,63 @@ summary { cursor: pointer; color: #d4dbe6; font-size: 13px; font-weight: 600; li
   .cierre-clasis,.clasificacion-confirmada { padding: 20px 17px; }
   .configuracion-completa > .fases-eliminatorias { padding: 22px 19px; }
   .invitacion-personal { flex-direction: column; align-items: stretch; }
-  .acceso { grid-template-columns: minmax(0,1fr); }
-  .presentacion { padding: 27px 24px 30px; border-right: 0; border-bottom: 1px solid var(--linea); }
-  .presentacion-contenido { margin: 37px 0 0; }
-  .presentacion h1 { font-size: 42px; letter-spacing: -1.7px; margin-top: 17px; line-height: 1.12; }
+  .acceso { grid-template-columns: minmax(0,1fr); grid-template-rows: auto minmax(0,1fr); }
+  .presentacion { padding: 16px 24px; border-right: 0; border-bottom: 1px solid var(--linea); }
+  .presentacion-contenido { margin: 18px 0 0; }
+  .presentacion h1 { font-size: clamp(28px,4dvh,36px); letter-spacing: -1.7px; margin-top: 12px; line-height: 1.12; }
   .presentacion h1 em { letter-spacing: -1px; }
-  .presentacion-contenido > p { font-size: 13px; margin-top: 20px; }
+  .presentacion-contenido > p { font-size: 13px; margin-top: 10px; }
   .presentacion-contenido > p br { display: none; }
   .acceso-beneficios { display: none; }
-  .acceso-formulario { padding: 34px 24px 42px; }
+  .acceso-formulario { padding: 16px 24px; }
   .icono-acceso { display: none; }
   .tarjeta-login h2 { font-size: 25px; margin-top: 6px; }
   .tarjeta-login .micro-etiqueta { font-size: 8px; }
-  .tarjeta-login form { margin-top: 26px; gap: 20px; }
+  .tarjeta-login form { margin-top: 20px; gap: 16px; }
+}
+/* Keep the access controls available when the viewport has little height. */
+@media (max-width: 600px) and (max-height: 800px), (max-height: 700px) {
+  .acceso .presentacion-contenido,.acceso .presentacion-pie { display: none; }
+  .acceso .presentacion { justify-content: center; }
+  .acceso .acceso-formulario { padding-block: 16px; }
+  .acceso .tarjeta-login form { margin-top: 16px; gap: 12px; }
+  .acceso .tarjeta-login .campo { gap: 6px; }
+  .acceso .tarjeta-login .recuperar-acceso { margin-top: 8px; }
+  .acceso .tarjeta-login > p[role="status"] { margin-top: 12px; }
+}
+@media (max-height: 700px) {
+  .acceso .presentacion { padding: 12px 20px; }
+  .acceso .tarjeta-login > .micro-etiqueta,.acceso .tarjeta-login > .texto-secundario { display: none; }
+  .acceso .tarjeta-login h2 { margin: 0; font-size: 24px; }
+  .acceso .tarjeta-login form { margin-top: 12px; gap: 8px; }
+  .acceso .tarjeta-login .campo { gap: 4px; }
+  .acceso .tarjeta-login input { min-height: 44px; padding: 8px 12px; font-size: 16px; }
+  .acceso .tarjeta-login form > .boton { min-height: 44px; margin-top: 0; padding-block: 8px; }
+  .acceso .tarjeta-login .mensaje-error { padding: 8px 10px; font-size: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+  .acceso .tarjeta-login > p[role="status"] { margin-top: 8px; font-size: 12px; line-height: 1.4; }
+  .acceso .tarjeta-login .recuperar-acceso { min-height: 38px; margin-top: 6px; padding-block: 8px; }
+}
+@media (max-height: 440px) {
+  .acceso .acceso-formulario { padding: 12px 20px; }
+  .acceso .tarjeta-login form { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .acceso .tarjeta-login form > .mensaje-error,.acceso .tarjeta-login form > .boton { grid-column: 1 / -1; }
+}
+@media (min-width: 480px) and (max-height: 440px) {
+  .acceso { grid-template-columns: minmax(0,.8fr) minmax(0,1.4fr); grid-template-rows: minmax(0,1fr); }
+  .acceso .presentacion { border-right: 1px solid var(--linea); border-bottom: 0; }
+  .acceso .presentacion .marca { flex-direction: column; gap: 8px; }
+  .acceso .presentacion .marca-textos { align-items: center; }
+}
+@media (max-height: 360px) {
+  .acceso .presentacion { padding-block: 8px; }
+  .acceso .acceso-formulario { padding-block: 6px; }
+  .acceso .tarjeta-login form { margin-top: 8px; gap: 6px; }
+  .acceso .tarjeta-login .mensaje-error { padding: 6px 8px; font-size: 11px; line-height: 1.35; }
+  .acceso .tarjeta-login > p[role="status"] { margin-top: 4px; font-size: 11px; line-height: 1.35; }
+  .acceso .tarjeta-login .recuperar-acceso { min-height: 34px; margin-top: 4px; padding-block: 6px; }
+}
+@media (max-width: 479px) and (max-height: 360px) {
+  .acceso .tarjeta-login h2 { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 }
 /* Ranking: the mobile layout must override the shared table minimum width. */
 .etiqueta-grupo-ranking,.etiqueta-puntos-ranking { display: none; }

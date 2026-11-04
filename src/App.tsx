@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { ArrowRight, AudioLines, Check, LoaderCircle, LogOut, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowRight, Check, LoaderCircle, LogOut, UserRound } from "lucide-react";
 import { supabase, enlaceVencido } from "./lib/supabase";
 import { useAuth } from "./hooks/useAuth";
 import "./App.css";
@@ -8,12 +8,13 @@ import "./App.css";
 import Plataforma from "./features/competencias/Plataforma";
 import CompletarAcceso from "./features/competencias/CompletarAcceso";
 import MiCuenta from "./features/competencias/MiCuenta";
+import logoGoldTransparent from "./assets/brand/logo-gold-transparent.png";
 
 
 function Marca() {
   return (
     <div className="marca" aria-label="Competencias de freestyle de Uruguay">
-      <span className="marca-icono" aria-hidden="true"><AudioLines size={22} strokeWidth={1.7} /></span>
+      <span className="marca-icono" aria-hidden="true"><img src={logoGoldTransparent} alt="" width={1261} height={1247} /></span>
       <span className="marca-textos"><span className="marca-nombre">COMPETENCIAS</span><span className="marca-subtitulo">FREESTYLE · URUGUAY</span></span>
     </div>
   );
@@ -75,10 +76,6 @@ function Login() {
 
       <section className="acceso-formulario">
         <div className="tarjeta-login">
-          <div className="icono-acceso">
-            <ShieldCheck size={25} aria-hidden="true" />
-          </div>
-
           <span className="micro-etiqueta">ACCESO A LA PLATAFORMA</span>
           <h2>Iniciar sesión</h2>
           <p className="texto-secundario">
