@@ -21,6 +21,10 @@ npm run lint
 El frontend requiere el esquema hasta 031 y el bootstrap. Las simulaciones de
 API se utilizan únicamente en las pruebas de navegador.
 
+La interfaz cierra la sesión tras 60 minutos sin interacción o a las 12 horas,
+con un aviso dos minutos antes. Ver [comportamiento y límites de seguridad de
+las sesiones](docs/SESIONES.md), incluido el alcance del plan Free.
+
 ## Instalación de base y actualización
 
 **Las migraciones remotas no se aplicaron desde este entorno.** Las funciones Edge de invitaciones y borrados están publicadas en iconic-free. Antes de actualizar la base, guardar un

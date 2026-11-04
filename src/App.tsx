@@ -3,6 +3,9 @@ import type { FormEvent } from "react";
 import { ArrowRight, Check, LoaderCircle, LogOut, UserRound } from "lucide-react";
 import { supabase, enlaceVencido } from "./lib/supabase";
 import { useAuth } from "./hooks/useAuth";
+import { useSessionTimeout } from "./hooks/useSessionTimeout";
+import type { SessionExpiryReason } from "./lib/sessionPolicy";
+import SessionWarning from "./components/SessionWarning";
 import "./App.css";
 
 import Plataforma from "./features/competencias/Plataforma";
@@ -20,11 +23,13 @@ function Marca() {
   );
 }
 
-function Login() {
+function Login({ expirationReason }: { expirationReason: SessionExpiryReason | null }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const [error, setError] = useState(enlaceVencido ? 'El enlace venció o no es válido. Solicitá uno nuevo o ingresá con tu contraseña.' : '');
+  const [error, setError] = useState(expirationReason
+    ? expirationReason === 'idle' ? 'Tu sesión venció por inactividad. Volvé a ingresar para continuar.' : 'Tu sesión alcanzó las 12 horas. Volvé a ingresar para continuar.'
+    : enlaceVencido ? 'El enlace venció o no es válido. Solicitá uno nuevo o ingresá con tu contraseña.' : '');
   const [aviso, setAviso] = useState('');
 
   async function iniciarSesion(event: FormEvent<HTMLFormElement>) {
@@ -159,6 +164,7 @@ function Login() {
 export default function App() {
   const { session, perfil, errorPerfil, cargando, reintentarPerfil, requierePassword, terminarAcceso } =
     useAuth();
+  const sessionTimeout = useSessionTimeout(session);
 
   const [cerrando, setCerrando] = useState(false);
   const [errorSalida, setErrorSalida] = useState("");
@@ -183,7 +189,7 @@ export default function App() {
     }
   }
 
-  if (cargando) {
+  if (cargando && !sessionTimeout.expired) {
     return (
       <main className="pantalla-carga" role="status">
         <Marca />
@@ -193,12 +199,13 @@ export default function App() {
     );
   }
 
-  if (!session) {
-    return <Login />;
+  if (!session || sessionTimeout.expired) {
+    return <Login expirationReason={sessionTimeout.expirationReason} />;
   }
 
   return (
     <div className="aplicacion">
+      {sessionTimeout.warning && <SessionWarning reason={sessionTimeout.warning.reason} remainingSeconds={sessionTimeout.warning.remainingSeconds} onContinue={sessionTimeout.continueSession} onEnd={sessionTimeout.endSession} />}
       <header className="cabecera">
         <Marca />
         <span className="cabecera-leyenda">Gestión de competencias</span>

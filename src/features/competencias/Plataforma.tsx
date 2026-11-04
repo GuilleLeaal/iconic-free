@@ -11,11 +11,20 @@ import { ArrowLeft, CalendarDays, ClipboardList, ShieldCheck, UserRound, UsersRo
 
 type Accesos = { administrador: boolean; competencias: Competencia[] };
 type Invitacion = { id: string; competencia: string; rol: string; vence_en: string };
+type WorkspaceContext = { competitionId: string | null; role: 'organizacion' | 'jurado'; admin: boolean };
+function readWorkspaceContext(userId: string): WorkspaceContext | null {
+  try {
+    const value = JSON.parse(sessionStorage.getItem(`iconic:workspace:${userId}`) ?? 'null');
+    return value && (value.competitionId === null || typeof value.competitionId === 'string') &&
+      ['organizacion', 'jurado'].includes(value.role) && typeof value.admin === 'boolean' ? value : null;
+  } catch { return null; }
+}
 export default function Plataforma({ usuarioId, nombre }: { usuarioId: string; nombre: string }) {
+  const [savedContext] = useState(() => readWorkspaceContext(usuarioId));
   const [accesos, setAccesos] = useState<Accesos | null>(null);
   const [seleccion, setSeleccion] = useState<Competencia | null>(null);
-  const [rol, setRol] = useState<'organizacion' | 'jurado'>('organizacion');
-  const [admin, setAdmin] = useState(false);
+  const [rol, setRol] = useState<'organizacion' | 'jurado'>(savedContext?.role ?? 'organizacion');
+  const [admin, setAdmin] = useState(savedContext?.admin ?? false);
   const [invitaciones, setInvitaciones] = useState<Invitacion[]>([]);
   const [error, setError] = useState('');
   const [revision, setRevision] = useState(0);
@@ -26,12 +35,19 @@ export default function Plataforma({ usuarioId, nombre }: { usuarioId: string; n
       if (contextos.error || invitaciones.error) { setError('No pudimos verificar tus accesos. Actualizá; comprobá que la instalación de la plataforma esté completa.'); setAccesos(null); return; }
       setError(''); setAccesos(contextos.data); setInvitaciones(invitaciones.data);
       setSeleccion(actual => {
-        const autorizado = contextos.data.competencias.find((c: Competencia) => c.id === actual?.id);
+        const autorizado = contextos.data.competencias.find((c: Competencia) => c.id === (actual?.id ?? savedContext?.competitionId));
         return autorizado ?? (contextos.data.administrador && actual ? actual : contextos.data.competencias[0] ?? null);
       });
     });
     return () => { vigente = false; };
-  }, [revision]);
+  }, [revision, savedContext]);
+  useEffect(() => {
+    if (!accesos) return;
+    try {
+      const context: WorkspaceContext = { competitionId: seleccion?.id ?? null, role: rol, admin };
+      sessionStorage.setItem(`iconic:workspace:${usuarioId}`, JSON.stringify(context));
+    } catch { /* Losing browser storage must not block the authorized workspace. */ }
+  }, [accesos, seleccion?.id, rol, admin, usuarioId]);
   useEffect(() => {
     const refrescar = () => setRevision(r => r + 1);
     const timer = window.setInterval(refrescar, 30000);
@@ -40,6 +56,7 @@ export default function Plataforma({ usuarioId, nombre }: { usuarioId: string; n
   }, []);
   if (!accesos) return <section className="panel"><p role={error ? 'alert' : 'status'}>{error || 'Verificando competencias autorizadas…'}</p><button className="boton boton-secundario" onClick={() => setRevision(r => r + 1)}>Actualizar accesos</button></section>;
   const rolActual = seleccion?.organizacion && (rol === 'organizacion' || !seleccion.jurado) ? 'organizacion' : 'jurado';
+  const mostrarAdmin = Boolean(admin && (accesos.administrador || seleccion?.organizacion));
   return <div className="workspace">
     <aside className="workspace-sidebar" aria-label="Navegación principal">
       <div className="identidad-competencia">
@@ -53,10 +70,10 @@ export default function Plataforma({ usuarioId, nombre }: { usuarioId: string; n
       </select></label>
       {seleccion?.organizacion && seleccion.jurado && <label className="campo selector-rol"><span>Actuar como</span><select value={rolActual} onChange={e => setRol(e.target.value as 'organizacion' | 'jurado')}><option value="organizacion">Organización</option><option value="jurado">Jurado</option></select></label>}
       <nav className="workspace-nav" aria-label="Navegación principal">
-        {seleccion && <button type="button" className={!admin ? 'workspace-nav-activa' : ''} aria-current={!admin ? 'page' : undefined} onClick={() => setAdmin(false)}>
+        {seleccion && <button type="button" className={!mostrarAdmin ? 'workspace-nav-activa' : ''} aria-current={!mostrarAdmin ? 'page' : undefined} onClick={() => setAdmin(false)}>
           {rolActual === 'organizacion' ? <CalendarDays size={19} /> : <ClipboardList size={19} />}<span>{rolActual === 'organizacion' ? 'Fechas' : 'Mis planillas'}<small>{rolActual === 'organizacion' ? 'Ediciones y organización' : 'Tus grupos asignados'}</small></span>
         </button>}
-        {(accesos.administrador || seleccion?.organizacion) && <button type="button" className={admin ? 'workspace-nav-activa' : ''} aria-current={admin ? 'page' : undefined} aria-label={accesos.administrador ? 'Administración global' : 'Administrar cuentas'} onClick={() => setAdmin(true)}>
+        {(accesos.administrador || seleccion?.organizacion) && <button type="button" className={mostrarAdmin ? 'workspace-nav-activa' : ''} aria-current={mostrarAdmin ? 'page' : undefined} aria-label={accesos.administrador ? 'Administración global' : 'Administrar cuentas'} onClick={() => setAdmin(true)}>
           {accesos.administrador ? <ShieldCheck size={19} /> : <UsersRound size={19} />}<span>{accesos.administrador ? 'Administración global' : 'Administrar cuentas'}<small>Personas y permisos</small></span>
         </button>}
       </nav>
@@ -64,13 +81,13 @@ export default function Plataforma({ usuarioId, nombre }: { usuarioId: string; n
     </aside>
     <div className="workspace-main">
       <div className="workspace-ubicacion"><span>COMPETENCIAS <span aria-hidden="true">/</span> {seleccion?.nombre ?? 'Plataforma'}</span><span className="insignia-acceso">{accesos.administrador ? 'Administrador' : rolActual === 'organizacion' ? 'Organización' : 'Jurado'}</span></div>
-      {admin && seleccion && <button type="button" className="boton boton-texto volver-competencia" onClick={() => setAdmin(false)}><ArrowLeft size={16} />Volver a la competencia</button>}
+      {mostrarAdmin && seleccion && <button type="button" className="boton boton-texto volver-competencia" onClick={() => setAdmin(false)}><ArrowLeft size={16} />Volver a la competencia</button>}
     {invitaciones.length > 0 && <section className="panel invitaciones-personales"><div className="titulo-seccion"><h2>Tenés una invitación</h2><p className="texto-secundario">Aceptá para acceder con tu cuenta personal.</p></div>{invitaciones.map(i => <div className="invitacion-personal" key={i.id}><div><strong>{i.competencia}</strong><p className="texto-secundario">{i.rol === 'organizacion' ? 'Organización' : 'Jurado'} · Vence {new Date(i.vence_en).toLocaleDateString('es-UY')}</p></div><button className="boton boton-principal" onClick={async () => {
       const { error } = await supabase.rpc('aceptar_invitacion', { p_id: i.id });
       if (error) setError(error.message); else setRevision(r => r + 1);
     }}>Aceptar vínculo</button></div>)}</section>}
     {error && <p className="mensaje-error" role="alert">{error}</p>}
-    {admin ? <Administracion key={`${seleccion?.id}:admin`} global={accesos.administrador} competencia={seleccion} usuarioActualId={usuarioId} onElegir={c => { setSeleccion(c); setAdmin(false); }} onCompetenciaEliminada={id => { setSeleccion(actual => actual?.id === id ? null : actual); setRevision(r => r + 1); }} onActualizar={() => setRevision(r => r + 1)} />
+    {mostrarAdmin ? <Administracion key={`${seleccion?.id}:admin`} global={accesos.administrador} competencia={seleccion} usuarioActualId={usuarioId} onElegir={c => { setSeleccion(c); setAdmin(false); }} onCompetenciaEliminada={id => { setSeleccion(actual => actual?.id === id ? null : actual); setRevision(r => r + 1); }} onActualizar={() => setRevision(r => r + 1)} />
       : seleccion ? <ContextoCompetencia.Provider key={`${usuarioId}:${seleccion.id}:${rolActual}`} value={{ competencia: seleccion, usuarioId }}>
         {rolActual === 'organizacion' ? <BrowserRouter><FechasPage /></BrowserRouter> : <JuradoPage juradoId={usuarioId} nombre={nombre} competenciaId={seleccion.id} />}
       </ContextoCompetencia.Provider> : <section className="panel"><p>No tenés vínculos activos. Aceptá una invitación o solicitá acceso a organización.</p>{accesos.administrador && <button className="boton boton-principal" onClick={() => setAdmin(true)}>Gestionar competencias</button>}</section>}

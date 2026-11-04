@@ -47,6 +47,12 @@ svg { flex-shrink: 0; }
 .acciones-cuenta .boton { min-height: 38px; padding: 8px 13px; font-size: 12px; }
 .mi-cuenta { max-width: 640px; margin-inline: auto; }
 .mi-cuenta .acciones-formulario { display: flex; justify-content: flex-end; }
+.session-warning { width: min(460px,calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 28px; border: 1px solid var(--linea); border-radius: 16px; background: var(--superficie); color: var(--texto); box-shadow: 0 24px 80px #0008; }
+.session-warning::backdrop { background: #070b13bb; }
+.session-warning h2 { margin: 10px 0 16px; }
+.session-warning p { margin-top: 14px; font-size: 14px; line-height: 1.6; }
+.session-warning .session-warning-countdown { color: var(--acento); font-variant-numeric: tabular-nums; }
+.session-warning-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 @media (max-width: 640px) {
   .cabecera { flex-wrap: wrap; }
   .acciones-cuenta { width: 100%; }
