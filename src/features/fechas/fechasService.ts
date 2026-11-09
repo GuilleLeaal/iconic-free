@@ -15,6 +15,7 @@ export type Fecha = {
   por_cruce: number | null;
   cupos: number | null;
   clasis_modo: "automaticas" | "siempre" | null;
+  armado_clasis: "sorteo" | "manual";
   grupos_clasi: number | null;
   maximo_tanda: number | null;
   llave_fija: boolean | null;
@@ -37,7 +38,7 @@ export type NuevaFecha = Configuracion & {
 };
 
 export const columnas = `
-  competencia_id, fase_inicial, por_cruce, cupos, clasis_modo, grupos_clasi, maximo_tanda, llave_fija, configuracion_version,
+  competencia_id, fase_inicial, por_cruce, cupos, clasis_modo, armado_clasis, grupos_clasi, maximo_tanda, llave_fija, configuracion_version,
   id,
   nombre,
   fecha_evento,

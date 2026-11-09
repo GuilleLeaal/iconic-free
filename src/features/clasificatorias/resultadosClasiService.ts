@@ -1,5 +1,6 @@
 import { supabase } from "../../lib/supabase";
 import type { EntradaClasi } from "./clasificatoriasService";
+import type { ConfirmedCross, InitialDrawMode } from '../eliminatorias/initialCrosses';
 
 export type FilaRankingClasi = {
   inscripcion_id: string;
@@ -101,14 +102,18 @@ export async function cerrarClasificatorias(
   ranking: RankingClasi,
   ganadores: string[],
   nota: string,
+  mode: InitialDrawMode,
+  crosses: ConfirmedCross[],
 ): Promise<void> {
   const { error } = await supabase.rpc(
-    "cerrar_clasificatorias_y_sortear_octavos",
+    "cerrar_clasificatorias_con_armado",
     {
       p_clasificatoria_id: ranking.clasificatoria_id,
       p_version: ranking.version,
       p_ganadores_desempate: ganadores,
       p_nota_desempate: nota.trim() || null,
+      p_modo: mode,
+      p_cruces: crosses,
     },
   );
   if (error)

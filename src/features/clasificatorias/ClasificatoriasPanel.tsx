@@ -62,7 +62,7 @@ export default function ClasificatoriasPanel({
     };
   }, [fecha.id, intento, onFechaActualizada]);
 
-  const necesitaClasis = datos?.sorteo?.plan.tipo === "clasificatorias";
+  const necesitaClasis = datos?.sorteo?.plan.tipo === "clasificatorias" || fecha.armado_clasis === 'manual';
 
   const permiteInicio =
     necesitaClasis &&
@@ -161,7 +161,9 @@ export default function ClasificatoriasPanel({
         ) : !datos?.clasificatoria ? (
           <div className="inicio-clasificatorias">
             <p className="texto-secundario">
-              {!datos?.sorteo
+              {!datos?.sorteo && fecha.armado_clasis === 'manual'
+                ? 'El armado se toma de Inscripciones. Completá los jurados de las clasis con participantes y guardá la planilla antes de comenzar. Las rondas pueden tener lugares libres.'
+                : !datos?.sorteo
                 ? "Generá el sorteo para saber si la fecha necesita clasificatorias."
                 : !necesitaClasis
                   ? "Esta fecha pasa directamente a su fase inicial."
@@ -170,7 +172,7 @@ export default function ClasificatoriasPanel({
                     : "La fecha no admite iniciar clasificatorias."}
             </p>
 
-            {necesitaClasis && (
+            {necesitaClasis && datos?.sorteo && (
               <p className="resumen-clasificatorias">
                 {datos?.sorteo?.plan.total} inscripciones · Grupos{" "}
                 {datos?.sorteo?.plan.grupos

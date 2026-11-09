@@ -1,0 +1,24 @@
+.manual-board { min-width: 0; padding: 0; margin: 0; border: 0; }
+.cabecera-armado, .acciones-armado { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.cabecera-armado { justify-content: space-between; margin-bottom: 16px; }
+.acciones-armado { margin-top: 16px; }
+.lugares-armado { list-style: none; padding: 0; margin: 16px 0 0; }
+.lugares-armado > li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid #29292d; min-width: 0; }
+.numero-lugar { flex: 0 0 22px; color: #aaa49a; font-size: 13px; }
+.contenido-lugar { min-width: 0; overflow-wrap: anywhere; }
+.acciones-lugar { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 6px; }
+.acciones-lugar button, .agregar-en-lugar, .boton-icono-armado { color: #c8c5bf; background: transparent; border: 0; cursor: pointer; font: inherit; }
+.acciones-lugar button { min-height: 36px; padding: 4px 0; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.agregar-en-lugar { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 8px; border: 1px dashed #39393d; border-radius: 6px; text-align: left; }
+.boton-icono-armado { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; }
+.manual-clasi-panel button:disabled { cursor: default; opacity: .5; }
+.manual-clasi-panel select, .armado-cruces select { width: 100%; min-width: 0; }
+.armado-cruces { margin: 24px 0; }
+.armado-cruces .grilla-tandas-clasi { margin-top: 16px; }
+.armado-cruces .campo + .campo { margin-top: 12px; }
+.armado-cruces .tanda-clasi p { overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .manual-clasi-panel .cabecera-inscripciones { align-items: flex-start; flex-wrap: wrap; }
+  .manual-clasi-panel .campos-inscripcion { grid-template-columns: minmax(0, 1fr); }
+  .armado-cruces .grilla-tandas-clasi { grid-template-columns: minmax(0, 1fr); }
+}

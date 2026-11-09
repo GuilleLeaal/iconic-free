@@ -1,5 +1,20 @@
 # Verificación
 
+## Actualización del 9 de noviembre de 2026
+
+Para 032, pasaron la reconstrucción y los recorridos de `npm test`, las pruebas
+de armados manuales en PostgreSQL/PGlite, build, lint (solo advertencias previas
+de efectos React), tipos Edge y revisión del bundle sin secretos. Se comprobó
+también actualizar 031 → 032 sin modificar votos ni cuadros históricos y conservar
+el cierre anterior como operación idempotente.
+
+Los diez casos nuevos de navegador se recolectaron correctamente con `--list`,
+pero no se ejecutaron: el sandbox bloqueó localhost y no se autorizó la ejecución
+externa. No se verificó visualmente esta interfaz ni se ejecutó concurrencia
+nativa o integración remota. Ver [actualización 032](ACTUALIZACION_032.md).
+
+Los resultados que siguen corresponden a la verificación histórica anterior.
+
 Fecha de trabajo: 3 de noviembre de 2026, America/Montevideo.
 
 ## Ejecutado

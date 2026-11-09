@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, LoaderCircle, RefreshCw, ArrowRight } from "lucide-react";
 import type { Fecha } from "../fechas/fechasService";
 import {
@@ -8,6 +8,9 @@ import {
 import type { FilaRankingClasi, RankingClasi } from "./resultadosClasiService";
 import "./resultadosClasi.css";
 import { useCompetencia } from '../competencias/ContextoCompetencia';
+import InitialCrossesEditor from '../eliminatorias/InitialCrossesEditor';
+import { buildInitialCrosses, confirmableCrosses } from '../eliminatorias/initialCrosses';
+import type { ConfirmedCross, InitialCross, InitialDrawMode } from '../eliminatorias/initialCrosses';
 
 const TAMANO_PAGINA = 20;
 const formatoPuntos = new Intl.NumberFormat("es-UY", {
@@ -36,7 +39,7 @@ function CierreClasificatorias({
 }: {
   ranking: RankingClasi;
   bloqueado: boolean;
-  onConfirmar: (ganadores: string[], nota: string) => Promise<void>;
+  onConfirmar: (ganadores: string[], nota: string, mode: InitialDrawMode, crosses: ConfirmedCross[]) => Promise<void>;
 }) {
   const { usuarioId } = useCompetencia();
   const clave = `iconic:repechaje:${usuarioId}:${ranking.clasificatoria_id}:${ranking.version}`;
@@ -87,6 +90,18 @@ function CierreClasificatorias({
   const seleccionValida =
     !requiere ||
     (ganadores.length === ranking.corte.cupos && nota.trim().length > 0);
+  const [mode, setMode] = useState<InitialDrawMode>('sorteo');
+  const [manual, setManual] = useState<{ key: string; crosses: InitialCross[] } | null>(null);
+  const selected = new Set([...ranking.corte.directos, ...(requiere ? ganadores : ranking.corte.empatados)]);
+  const finalists = ranking.filas.filter(f => selected.has(f.inscripcion_id));
+  const signature = finalists.map(f => f.inscripcion_id).join(',');
+  const ids = useMemo(() => signature ? signature.split(',') : [], [signature]);
+  const crossCount = ranking.fase_inicial === 'dieciseisavos' ? 16 : 8;
+  const perCross = Math.ceil(ranking.clasifican / crossCount);
+  const initial = useMemo(() => buildInitialCrosses(ids, mode, perCross, crossCount), [ids, mode, perCross, crossCount]);
+  const manualKey = `${ranking.version}:${mode}:${signature}`;
+  const preview = manual?.key === manualKey ? manual.crosses : initial;
+  const allAssigned = preview.flatMap(c => c.inscripciones).filter(Boolean).length === ranking.efectivos;
   return (
     <section className="cierre-clasis" aria-label="Confirmar clasificación">
       <h3>
@@ -160,19 +175,23 @@ function CierreClasificatorias({
           pantalla abierta hasta confirmar el cierre.
         </p>
       )}
+      {seleccionValida && ranking.efectivos >= 2 && <InitialCrossesEditor mode={mode} crosses={preview} finalists={finalists} disabled={bloqueado}
+        onMode={value => { setMode(value); setManual(null); }} onShuffle={() => setManual({ key: manualKey, crosses: buildInitialCrosses(ids, 'sorteo', perCross, crossCount) })}
+        onChange={crosses => setManual({ key: manualKey, crosses })}
+        onFill={() => setManual({ key: manualKey, crosses: buildInitialCrosses(ids, 'puntaje', perCross, crossCount) })} />}
       <button
         type="button"
         className="boton boton-principal"
-        disabled={bloqueado || !seleccionValida || ranking.efectivos < 2}
+        disabled={bloqueado || !seleccionValida || !allAssigned || ranking.efectivos < 2}
         onClick={() => {
-          if (bloqueado || !seleccionValida) return;
+          if (bloqueado || !seleccionValida || !allAssigned) return;
           if (
             !window.confirm(
               `¿Confirmar los ${ranking.efectivos ?? ranking.clasifican} clasificados (de ${ranking.clasifican} cupos) e iniciar ${ranking.fase_inicial ?? "octavos"}? Se cerrarán las clasis y las altas. La clasificación y los cruces quedarán guardados.`,
             )
           )
             return;
-          void onConfirmar(requiere ? ganadores : [], requiere ? nota : "");
+          void onConfirmar(requiere ? ganadores : [], requiere ? nota : "", mode, confirmableCrosses(preview));
         }}
       >
         <Check size={17} aria-hidden="true" />
@@ -180,8 +199,8 @@ function CierreClasificatorias({
       </button>
       {ranking.efectivos < 2 && <p className="mensaje-error">Se necesitan al menos dos inscripciones puntuadas para iniciar eliminatorias. Las planillas pueden finalizarse igualmente.</p>}
       <p className="ayuda-resultados-clasi">
-        La confirmación guarda los resultados y el sorteo en una sola operación.
-        Revisá el corte antes de confirmar.
+        La confirmación guarda los resultados y estos cruces en una sola operación.
+        Revisá el corte y la vista previa antes de confirmar.
       </p>
     </section>
   );
@@ -233,13 +252,13 @@ export default function ResultadosClasiPanel({
     setIntento((i) => i + 1);
   }
 
-  async function confirmar(ganadores: string[], nota: string) {
+  async function confirmar(ganadores: string[], nota: string, mode: InitialDrawMode, crosses: ConfirmedCross[]) {
     if (!ranking || cargando || errorCarga || enCurso.current) return;
     enCurso.current = true;
     setGuardando(true);
     setErrorAccion("");
     try {
-      await cerrarClasificatorias(ranking, ganadores, nota);
+      await cerrarClasificatorias(ranking, ganadores, nota, mode, crosses);
       try {
         localStorage.removeItem(
           `iconic:repechaje:${usuarioId}:${ranking.clasificatoria_id}:${ranking.version}`,

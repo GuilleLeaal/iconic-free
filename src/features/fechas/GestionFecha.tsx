@@ -6,6 +6,7 @@ import { supabase } from "../../lib/supabase";
 import type { Fecha } from "./fechasService";
 
 import InscripcionesPanel from "../inscripciones/InscripcionesPanel";
+import ManualClasiPanel from '../clasificatorias/ManualClasiPanel';
 import SorteoPanel from "../sorteos/SorteoPanel";
 import ClasificatoriasPanel from "../clasificatorias/ClasificatoriasPanel";
 import EliminatoriasPanel from "../eliminatorias/EliminatoriasPanel";
@@ -35,7 +36,7 @@ export default function GestionFecha({ fecha, onConfiguracionActualizada }: { fe
   const [parametros, setParametros] = useSearchParams();
 
   const vista = parametros.get("vista");
-  const seccion: Seccion = esSeccion(vista) ? vista : "inscripciones";
+  const seccion: Seccion = esSeccion(vista) && !(fecha.armado_clasis === 'manual' && vista === 'sorteos') ? vista : "inscripciones";
 
   const [fechaActual, setFechaActual] = useState(fecha);
   const [bloqueado, setBloqueado] = useState(true);
@@ -111,7 +112,7 @@ export default function GestionFecha({ fecha, onConfiguracionActualizada }: { fe
   return (
     <div className="gestion-fecha">
       <nav className="navegacion-fecha" aria-label="Organización de la fecha">
-        {SECCIONES.map((item) => (
+        {SECCIONES.filter(item => fecha.armado_clasis !== 'manual' || item.id !== 'sorteos').map((item) => (
           <button
             type="button"
             key={item.id}
@@ -147,7 +148,8 @@ export default function GestionFecha({ fecha, onConfiguracionActualizada }: { fe
         </div>
       ) : (
         <>
-          {seccion === "inscripciones" && (
+          {seccion === "inscripciones" && (fechaActual.armado_clasis === 'manual' && ['borrador', 'inscripciones'].includes(fechaActual.estado) ?
+            <ManualClasiPanel key={fechaActual.id} fecha={fechaActual} bloqueado={bloqueado} onContinue={() => cambiarSeccion('clasificatorias')} /> :
             <InscripcionesPanel
               key={fechaActual.id}
               fecha={fechaActual}
