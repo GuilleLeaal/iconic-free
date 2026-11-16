@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from 'react-router';
 import type { FormEvent } from "react";
-import { ArrowRight, Check, LoaderCircle, LogOut, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, LoaderCircle, LogOut, UserRound } from "lucide-react";
 import { supabase, enlaceVencido } from "./lib/supabase";
 import { useAuth } from "./hooks/useAuth";
 import { useSessionTimeout } from "./hooks/useSessionTimeout";
@@ -11,6 +12,7 @@ import "./App.css";
 import Plataforma from "./features/competencias/Plataforma";
 import CompletarAcceso from "./features/competencias/CompletarAcceso";
 import MiCuenta from "./features/competencias/MiCuenta";
+import InicioPublico from './features/inicio/InicioPublico';
 import logoGoldTransparent from "./assets/brand/logo-gold-transparent.png";
 
 
@@ -65,7 +67,7 @@ function Login({ expirationReason }: { expirationReason: SessionExpiryReason | n
   return (
     <main className="acceso">
       <section className="presentacion">
-        <Marca />
+        <div className="presentacion-marca"><Marca /><Link className="acceso-volver" to="/"><ArrowLeft size={14} aria-hidden="true" />Inicio</Link></div>
 
         <div className="presentacion-contenido">
           <span className="etiqueta"><span className="punto-vivo" />GESTIÓN DE COMPETENCIAS</span>
@@ -162,6 +164,8 @@ function Login({ expirationReason }: { expirationReason: SessionExpiryReason | n
 }
 
 export default function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { session, perfil, errorPerfil, cargando, reintentarPerfil, requierePassword, terminarAcceso } =
     useAuth();
   const sessionTimeout = useSessionTimeout(session);
@@ -169,6 +173,18 @@ export default function App() {
   const [cerrando, setCerrando] = useState(false);
   const [errorSalida, setErrorSalida] = useState("");
   const [miCuenta, setMiCuenta] = useState(false);
+  const redireccionAcceso = useRef({ enlace: false, sesion: false });
+
+  // Un enlace fallido o una sesión vencida lleva al formulario con su aviso.
+  // La navegación posterior al inicio sigue disponible.
+  useEffect(() => {
+    const aviso = redireccionAcceso.current;
+    if ((sessionTimeout.expired && !aviso.sesion) || (enlaceVencido && !aviso.enlace)) {
+      navigate('/login', { replace: true });
+    }
+    aviso.enlace = true;
+    aviso.sesion = sessionTimeout.expired;
+  }, [sessionTimeout.expired, navigate]);
 
   async function cerrarSesion() {
     if (cerrando) return;
@@ -200,7 +216,9 @@ export default function App() {
   }
 
   if (!session || sessionTimeout.expired) {
-    return <Login expirationReason={sessionTimeout.expirationReason} />;
+    return location.pathname === '/login'
+      ? <Login key={sessionTimeout.expirationReason ?? 'login'} expirationReason={sessionTimeout.expirationReason} />
+      : <InicioPublico />;
   }
 
   return (

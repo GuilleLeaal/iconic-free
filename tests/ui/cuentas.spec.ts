@@ -35,7 +35,7 @@ async function preparar(page:Page,{global=true,falloBorrado=false,invitacion=fal
   }
   throw Error('Solicitud sin fixture: '+u.pathname);
  });
- await page.goto(invitacion?'/#type=invite':'/');
+ await page.goto(invitacion?'/login#type=invite':'/login');
  await page.getByLabel('Correo',{exact:true}).fill('admin@prueba.local');await page.getByLabel('Contraseña',{exact:true}).fill('password-test');
  await page.getByRole('button',{name:'Ingresar',exact:true}).click();
  return {borrados,competenciasBorradas,errores};

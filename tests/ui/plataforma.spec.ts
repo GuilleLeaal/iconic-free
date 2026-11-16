@@ -69,7 +69,7 @@ async function preparar(page: Page, organizacion = false, global = false, conFec
     }
     throw new Error(`Solicitud sin fixture: ${req.method()} ${u.pathname}`);
   });
-  await page.goto('/');
+  await page.goto('/login');
   await page.getByLabel('Correo', { exact: true }).fill('jurado@test.local');
   await page.getByLabel('Contraseña', { exact: true }).fill('password-test');
   await page.getByRole('button', { name: 'Ingresar', exact: true }).click();

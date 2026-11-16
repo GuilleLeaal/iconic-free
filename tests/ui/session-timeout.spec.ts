@@ -54,7 +54,7 @@ async function prepare(page: Page, offlineLogout = false) {
   };
   await page.clock.install({ time: baseTime });
   await attach(page);
-  await page.goto('/');
+  await page.goto('/login');
   const login = async () => {
     await page.getByLabel('Correo', { exact: true }).fill('jurado@prueba.local');
     await page.getByLabel('Contraseña', { exact: true }).fill('test-password');

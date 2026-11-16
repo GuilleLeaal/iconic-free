@@ -52,7 +52,7 @@ for (const viewport of viewports) {
       expect(dimensions.height).toBeLessThanOrEqual(dimensions.viewportHeight);
     };
 
-    await page.goto('/');
+    await page.goto('/login');
     await checkLayout();
     await page.getByRole('button', { name: 'Recuperar acceso / solicitar enlace nuevo', exact: true }).click();
     await expect(page.getByRole('alert')).toBeInViewport({ ratio: 1 });

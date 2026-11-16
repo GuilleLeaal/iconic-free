@@ -53,7 +53,7 @@ async function escenario(page: Page) {
   if(u.pathname.endsWith('/rpc/buscar_invitaciones')) return json({filas:[{id:'invitacion',email:'nueva.persona@prueba.local',rol:'jurado',entrega:'enviada',vence_en:'2026-12-01',vencida:false,competencia_id:competencia,competencia:'Iconic'}],hay_mas:false});
   throw Error('Falta fixture visual: '+u.pathname+' '+JSON.stringify(body));
  });
- await page.goto('/');
+ await page.goto('/login');
  await page.getByLabel('Correo',{exact:true}).fill('organizacion@prueba.local');
  await page.getByLabel('Contraseña',{exact:true}).fill('test-password');
  await page.getByRole('button',{name:'Ingresar',exact:true}).click();
@@ -100,7 +100,7 @@ test('recorrido visual: fechas, operación, configuración, cuentas y planillas'
 });
 
 test('pantalla de acceso legible y sin desbordes',async({page},testInfo)=>{
- await page.goto('/');
+ await page.goto('/login');
  await expect(page.getByRole('button',{name:'Ingresar',exact:true})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.screenshot({path:testInfo.outputPath('00-acceso.png'),fullPage:true});

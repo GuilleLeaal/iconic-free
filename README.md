@@ -151,6 +151,12 @@ APIs contrastadas con documentación oficial:
 
 ## Uso
 
+- El inicio `/` es una landing pública con las seis competencias destacadas y
+  enlaces a sus cuentas oficiales de Instagram. El catálogo y su orden están
+  en `src/features/inicio/InicioPublico.tsx`; los logos se sirven localmente.
+  **Iniciar sesión** abre `/login`. Las sesiones existentes conservan el acceso
+  a la plataforma y los enlaces de invitación/recuperación siguen funcionando.
+
 - Administración global crea competencias e invita organizadores/jurados.
   Los directorios se buscan y paginan en servidor. Organización ve únicamente
   vínculos de su competencia.

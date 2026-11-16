@@ -57,7 +57,7 @@ async function prepare(page: Page, members = 1, results = false) {
     if (url.pathname.endsWith('/rpc/cerrar_clasificatorias_con_armado')) { submissions.push(body); closed = true; return json('sorteo'); }
     throw Error('Solicitud sin fixture: ' + url.pathname);
   });
-  await page.goto('/'); await page.getByLabel('Correo', { exact: true }).fill(user.email); await page.getByLabel('Contraseña', { exact: true }).fill('password-test');
+  await page.goto('/login'); await page.getByLabel('Correo', { exact: true }).fill(user.email); await page.getByLabel('Contraseña', { exact: true }).fill('password-test');
   await page.getByRole('button', { name: 'Ingresar', exact: true }).click();
   await page.getByRole('button', { name: 'Abrir Fecha manual', exact: true }).click();
   if (results) await page.getByRole('button', { name: 'Resultados', exact: true }).click();

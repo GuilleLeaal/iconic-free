@@ -35,7 +35,7 @@ async function preparar(page:Page,cantidad:number,jurado=false) {
   }
   throw Error('Solicitud sin fixture: '+u.pathname);
  });
- await page.goto('/');await page.getByLabel('Correo',{exact:true}).fill('equipo@prueba.local');await page.getByLabel('Contraseña',{exact:true}).fill('password-test');await page.getByRole('button',{name:'Ingresar',exact:true}).click();
+ await page.goto('/login');await page.getByLabel('Correo',{exact:true}).fill('equipo@prueba.local');await page.getByLabel('Contraseña',{exact:true}).fill('password-test');await page.getByRole('button',{name:'Ingresar',exact:true}).click();
  if(!jurado) await page.getByRole('button',{name:'Abrir Fecha en equipos',exact:true}).click();
  return {llamadas};
 }

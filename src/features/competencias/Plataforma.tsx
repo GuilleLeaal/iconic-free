@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter } from 'react-router';
 import { supabase } from '../../lib/supabase';
 import FechasPage from '../fechas/FechasPage';
 import JuradoPage from '../clasificatorias/JuradoPage';
@@ -89,7 +88,7 @@ export default function Plataforma({ usuarioId, nombre }: { usuarioId: string; n
     {error && <p className="mensaje-error" role="alert">{error}</p>}
     {mostrarAdmin ? <Administracion key={`${seleccion?.id}:admin`} global={accesos.administrador} competencia={seleccion} usuarioActualId={usuarioId} onElegir={c => { setSeleccion(c); setAdmin(false); }} onCompetenciaEliminada={id => { setSeleccion(actual => actual?.id === id ? null : actual); setRevision(r => r + 1); }} onActualizar={() => setRevision(r => r + 1)} />
       : seleccion ? <ContextoCompetencia.Provider key={`${usuarioId}:${seleccion.id}:${rolActual}`} value={{ competencia: seleccion, usuarioId }}>
-        {rolActual === 'organizacion' ? <BrowserRouter><FechasPage /></BrowserRouter> : <JuradoPage juradoId={usuarioId} nombre={nombre} competenciaId={seleccion.id} />}
+        {rolActual === 'organizacion' ? <FechasPage /> : <JuradoPage juradoId={usuarioId} nombre={nombre} competenciaId={seleccion.id} />}
       </ContextoCompetencia.Provider> : <section className="panel"><p>No tenés vínculos activos. Aceptá una invitación o solicitá acceso a organización.</p>{accesos.administrador && <button className="boton boton-principal" onClick={() => setAdmin(true)}>Gestionar competencias</button>}</section>}
     </div>
   </div>;
