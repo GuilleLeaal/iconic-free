@@ -62,7 +62,7 @@ export const competenciasPublicas: CompetenciaPublica[] = [
     descripcion: 'La 9na es de Atlántida. Lleva varias temporadas juntando MCs de Uruguay y de otros países para batallar y rapear.',
     presentacion: [
       'La 9na Avenida es una competencia de freestyle de Atlántida, Canelones. Por sus fechas pasaron MCs de distintas partes de Uruguay e invitados de otros países, que se fueron cruzando en batallas y cyphers.',
-      'En sus primeras tres temporadas hubo batallas individuales, por equipos y fechas como «Batalla de Canciones» y «2v2 Sin Carreo». También se armaron cyphers y encuentros internacionales, con distintas formas de competir y de juntarse a rapear.',
+      'En sus primeras tres temporadas hubo batallas individuales, por equipos y fechas como «Batalla de Canciones» y «2v2 Sin Carreo». También se armaron cyphers y encuentros internacionales, con distintas formas de competir y de convivencia.',
       'La 9na también tuvo fechas en Montevideo y compartió una con Green & White. Así se fue cruzando con otras competencias y con gente de la costa y de otras partes del país.',
     ],
     enlaces: [
@@ -76,7 +76,7 @@ export const competenciasPublicas: CompetenciaPublica[] = [
     ubicacion: 'Uruguay',
     descripcion: 'Una competencia uruguaya de batallas y cyphers, con fechas en la Plaza de la Bandera.',
     presentacion: [
-      'Green & White es una competencia uruguaya que hace batallas en la Plaza de la Bandera. Ahí se juntan los MCs y la gente que va a verlos competir.',
+      'Green & White es una competencia uruguaya que hace batallas en la Plaza de la Bandera. Ahí se juntan los competidores y la gente que va a verlos batallar.',
       'Para festejar su tercer aniversario armaron un cypher, juntando a varios MCs a rapear.',
       'También compartieron una fecha con la 9na Avenida y organizaron batallas que dieron cupos para otras competencias de Uruguay y para Pache Ring, en Lima, Perú.',
     ],
@@ -90,7 +90,7 @@ export const competenciasPublicas: CompetenciaPublica[] = [
     ubicacion: 'Las Piedras, Canelones',
     descripcion: 'Las batallas de la Antag, en Las Piedras, Canelones.',
     presentacion: [
-      'La Antag es de Las Piedras. En el anfiteatro «A don José» se juntaron los MCs y el público para sus batallas.',
+      'La Antag es de Las Piedras. En el anfiteatro «A don José» se juntaron los competidores y el público para sus batallas.',
       'La organizan @grimreaper.zk y @kardumen.yk.',
     ],
     enlaces: [
@@ -116,7 +116,7 @@ export const competenciasPublicas: CompetenciaPublica[] = [
     ubicacion: 'Uruguay',
     descripcion: 'Una competencia de freestyle de Uruguay, con Exiliados Crew.',
     presentacion: [
-      'Exiliados Park arrancó con una invitación a MCs y crews para juntarse a batallar en la Plaza de la Bandera.',
+      'Exiliados Park arrancó con una invitación a competidores a batallar en la Plaza de la Bandera.',
       'La acompañaron Exiliados Crew y emprendimientos de la zona, que dieron una mano para armar la competencia.',
     ],
     enlaces: [
