@@ -1,15 +1,15 @@
 import { test, expect } from '@playwright/test';
 
 const competencias = [
-  ['DEM Battles', 'dem.uruguay'],
-  ['9na Avenida', '9na_avenida'],
-  ['Green & White', 'greenandwhite_free'],
-  ['AntagFreestyle', 'antagfree'],
-  ['Iconic Freestyle', 'iconic.free'],
-  ['Exiliados Park', 'exiliadospark'],
+  ['DEM Battles', 'dem-battles'],
+  ['9na Avenida', '9na-avenida'],
+  ['Green & White', 'green-and-white'],
+  ['AntagFreestyle', 'antag-freestyle'],
+  ['Iconic Freestyle', 'iconic-freestyle'],
+  ['Exiliados Park', 'exiliados-park'],
 ];
 
-test('inicio público con identidades locales, orden editorial y enlaces oficiales', async ({ page }, testInfo) => {
+test('inicio público con identidades locales, orden editorial y páginas de presentación', async ({ page }, testInfo) => {
   const consultasPrivadas: string[] = [];
   const errores: string[] = [];
   page.on('pageerror', error => errores.push(error.message));
@@ -23,11 +23,11 @@ test('inicio público con identidades locales, orden editorial y enlaces oficial
   await expect(page.getByLabel('Correo', { exact: true })).toHaveCount(0);
   const tarjetas = page.locator('.inicio-grilla > li');
   await expect(tarjetas).toHaveCount(6);
-  for (const [i, [nombre, cuenta]] of competencias.entries()) {
+  for (const [i, [nombre, slug]] of competencias.entries()) {
     const tarjeta = tarjetas.nth(i);
     await expect(tarjeta.getByRole('heading')).toHaveText(nombre);
-    await expect(tarjeta.getByRole('link')).toHaveAttribute('href', `https://www.instagram.com/${cuenta}/`);
-    await expect(tarjeta.getByRole('link')).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(tarjeta.getByRole('link')).toHaveAttribute('href', `/competencias/${slug}`);
+    await expect(tarjeta.getByRole('link')).not.toHaveAttribute('target', '_blank');
     const logo = tarjeta.getByRole('img', { name: `Logo de ${nombre}`, exact: true });
     await logo.scrollIntoViewIfNeeded();
     await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);

@@ -1,0 +1,65 @@
+.competencia-presentacion { margin-bottom: 48px; background: transparent; }
+.competencia-migas { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding-block: 24px; color: var(--inicio-suave); font-size: 11px; }
+.competencia-migas a { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; }
+.competencia-migas a:hover { color: var(--inicio-texto); }
+.competencia-migas > span:last-child { color: var(--identidad); }
+.competencia-hero { display: grid; grid-template-columns: minmax(0, 1fr) 200px; align-items: center; gap: 40px; padding: 40px 44px; border: 1px solid color-mix(in srgb, var(--identidad) 22%, transparent); border-radius: 10px; background: linear-gradient(110deg, color-mix(in srgb, var(--identidad) 8%, #10110f), #10110f); }
+.competencia-lugar { display: flex; align-items: center; gap: 8px; color: var(--identidad); font-size: 12px; }
+.inicio-publico .competencia-hero h1 { margin-top: 14px; font-size: clamp(34px, 4.8vw, 58px); font-weight: 700; letter-spacing: -1.8px; line-height: 1.15; overflow-wrap: anywhere; color: var(--inicio-texto); }
+.competencia-descripcion { margin-top: 18px; max-width: 580px; color: #c4c6bc; font-size: 15px; line-height: 1.85; }
+.competencia-logo { display: grid; place-items: center; justify-self: center; width: 200px; height: 200px; border: 1px solid color-mix(in srgb, var(--identidad) 20%, transparent); border-radius: 50%; background: color-mix(in srgb, var(--identidad) 5%, #10110f); }
+.competencia-logo img { display: block; width: 140px; height: 140px; border-radius: 50%; object-fit: contain; }
+.inicio-publico .competencia-instagram { display: inline-flex; align-items: center; justify-content: center; gap: 12px; margin-top: 26px; padding: 12px 18px; min-height: 46px; border: 1px solid var(--identidad); border-radius: 5px; background: var(--identidad); color: #11140e; font-size: 12px; font-weight: 700; }
+.competencia-instagram:hover { filter: brightness(1.1); }
+.competencia-presentacion a:focus-visible { outline-color: var(--identidad); }
+.competencia-acerca { padding-block: 46px; }
+.competencia-acerca-con-imagen { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 52px; }
+.inicio-publico .competencia-presentacion h2 { font-size: 23px; line-height: 1.35; letter-spacing: -.5px; font-weight: 600; color: var(--inicio-texto); }
+.competencia-acerca-texto > p { margin-top: 20px; max-width: 670px; color: #b2b5aa; font-size: 14px; line-height: 1.9; }
+.competencia-cuenta { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 18px; color: var(--identidad) !important; font-size: 12px; }
+.competencia-foto { margin: 0; min-width: 0; }
+.competencia-foto > img { display: block; width: 100%; height: auto; border-radius: 8px; background: #181a15; }
+.competencia-foto--vertical { width: min(100%, 340px); justify-self: end; }
+.competencia-foto figcaption { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; color: #9da292; font-size: 9px; line-height: 1.6; }
+.competencia-foto figcaption a { display: inline-flex; align-items: center; gap: 6px; width: fit-content; min-height: 28px; color: var(--identidad); }
+.competencia-canales { padding-block: 30px 42px; border-top: 1px solid #ffffff18; }
+.competencia-canales-grilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 14px; margin-top: 23px; }
+.competencia-canal { display: flex; align-items: center; gap: 16px; min-height: 96px; padding: 20px; border: 1px solid #ffffff18; border-radius: 7px; background: #171913; }
+.competencia-canal > svg:first-child { color: var(--identidad); }
+.competencia-canal > svg:last-child { margin-left: auto; color: var(--inicio-suave); }
+.competencia-canal > span { min-width: 0; }
+.competencia-canal strong { display: block; color: var(--inicio-texto); font-size: 13px; font-weight: 600; }
+.competencia-canal small { display: block; margin-top: 5px; color: var(--inicio-suave); font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
+.competencia-canal:hover { border-color: var(--identidad); }
+.competencia-otras { padding-top: 28px; border-top: 1px solid #ffffff18; }
+.competencia-otras ul { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; margin: 22px 0 0; list-style: none; }
+.competencia-otras a { display: flex; align-items: center; gap: 10px; min-height: 58px; padding: 9px 12px; border: 1px solid #ffffff18; border-radius: 6px; font-size: 11px; }
+.competencia-otras img { display: block; width: 36px; height: 36px; border-radius: 50%; }
+.competencia-otras a > svg { color: var(--inicio-suave); }
+.competencia-otras a:hover { background: #ffffff08; border-color: #ffffff40; }
+.competencia-no-encontrada { padding-block: 72px; }
+.competencia-no-encontrada h1 { font-size: 32px; }
+.competencia-no-encontrada p { margin-block: 20px; color: var(--inicio-suave); }
+@media (max-width: 800px) {
+  .competencia-hero { padding: 30px; gap: 26px; grid-template-columns: minmax(0, 1fr) 150px; }
+  .competencia-logo { width: 150px; height: 150px; }
+  .competencia-logo img { width: 112px; height: 112px; }
+  .competencia-acerca-con-imagen { gap: 28px; }
+}
+@media (max-width: 600px) {
+  .competencia-migas { padding-block: 16px; font-size: 10px; }
+  .competencia-hero { padding: 24px; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .competencia-logo { grid-row: 1; justify-self: start; width: 100px; height: 100px; }
+  .competencia-logo img { width: 80px; height: 80px; }
+  .inicio-publico .competencia-hero h1 { font-size: clamp(29px, 8.6vw, 42px); letter-spacing: -1px; }
+  .competencia-descripcion { font-size: 13px; }
+  .competencia-lugar { font-size: 11px; }
+  .competencia-acerca { padding-block: 32px; }
+  .competencia-acerca-con-imagen { grid-template-columns: minmax(0, 1fr); }
+  .competencia-foto--vertical { justify-self: start; }
+  .competencia-acerca-texto > p { font-size: 13px; }
+  .competencia-canales { padding-block: 28px; }
+  .competencia-otras ul { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .competencia-otras a > svg { margin-left: auto; }
+  .competencia-presentacion { margin-bottom: 32px; }
+}

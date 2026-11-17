@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, Route, Routes, useLocation, useNavigate } from 'react-router';
 import type { FormEvent } from "react";
 import { ArrowLeft, ArrowRight, Check, LoaderCircle, LogOut, UserRound } from "lucide-react";
 import { supabase, enlaceVencido } from "./lib/supabase";
@@ -13,6 +13,7 @@ import Plataforma from "./features/competencias/Plataforma";
 import CompletarAcceso from "./features/competencias/CompletarAcceso";
 import MiCuenta from "./features/competencias/MiCuenta";
 import InicioPublico from './features/inicio/InicioPublico';
+import PresentacionCompetencia, { PaginaPublicaNoEncontrada } from './features/inicio/PresentacionCompetencia';
 import logoGoldTransparent from "./assets/brand/logo-gold-transparent.png";
 
 
@@ -215,10 +216,18 @@ export default function App() {
     );
   }
 
-  if (!session || sessionTimeout.expired) {
-    return location.pathname === '/login'
-      ? <Login key={sessionTimeout.expirationReason ?? 'login'} expirationReason={sessionTimeout.expirationReason} />
-      : <InicioPublico />;
+  if (!session || sessionTimeout.expired || location.pathname.startsWith('/competencias/')) {
+    return (
+      <>
+        {sessionTimeout.warning && <SessionWarning reason={sessionTimeout.warning.reason} remainingSeconds={sessionTimeout.warning.remainingSeconds} onContinue={sessionTimeout.continueSession} onEnd={sessionTimeout.endSession} />}
+        <Routes>
+          <Route path="/" element={<InicioPublico />} />
+          <Route path="/login" element={<Login key={sessionTimeout.expirationReason ?? 'login'} expirationReason={sessionTimeout.expirationReason} />} />
+          <Route path="/competencias/:slug" element={<PresentacionCompetencia />} />
+          <Route path="*" element={<PaginaPublicaNoEncontrada />} />
+        </Routes>
+      </>
+    );
   }
 
   return (

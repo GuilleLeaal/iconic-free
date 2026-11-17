@@ -13,4 +13,8 @@ Se conserva el archivo original, sin filtros ni recoloración. Las imágenes dis
 | iconic.jpg | https://www.instagram.com/iconic.free/ |
 | exiliados-park.jpg | https://www.instagram.com/exiliadospark/ |
 
-El catálogo editorial y su orden se mantienen en `src/features/inicio/InicioPublico.tsx`.
+El catálogo editorial y su orden se mantienen en `src/features/inicio/competenciasPublicas.ts`.
+
+Las imágenes de presentación se descargaron de las publicaciones enlazadas en
+`docs/COMPETENCIAS_PUBLICAS.md`. Se conservan sus originales y se muestran con
+crédito y enlace a la publicación. No se incluyen flyers de próximas fechas.

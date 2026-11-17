@@ -81,6 +81,14 @@ test('avisa a los 58 minutos, permite continuar y expira sin contar consultas au
   await expect.poll(() => fixture.logoutScopes).toContain('local');
 });
 
+test('una sesión existente puede visitar una presentación y volver a la plataforma', async ({ page }) => {
+  await prepare(page);
+  await page.goto('/competencias/dem-battles');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('DEM Battles');
+  await page.getByRole('link', { name: 'Iniciar sesión', exact: true }).click();
+  await expect(page.getByRole('spinbutton').first()).toBeVisible();
+});
+
 test('la interacción real reinicia la espera, pero los eventos programáticos no', async ({ page }) => {
   await prepare(page);
   await page.clock.fastForward(50 * minute);
