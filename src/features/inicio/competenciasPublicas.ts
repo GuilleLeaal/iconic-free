@@ -46,7 +46,7 @@ export const competenciasPublicas: CompetenciaPublica[] = [
     descripcion: 'DEM Uruguay es la versión uruguaya de la DEM, que arrancó en Chile y después llegó a otros países.',
     presentacion: [
       'La DEM arrancó en Santiago de Chile en 2016. La armaron Diego y Matías Núñez, los hermanos detrás de Don Rapeador. Las primeras fechas fueron en el Parque O’Higgins y, con el tiempo, el Parque Bustamante se volvió uno de sus lugares más conocidos.',
-      'Fue creciendo con las batallas de plaza: MCs que llegaban de distintas partes de Chile y gente que se acercaba a verlos rapear. Por ahí pasaron Joqerr, Pepe Grillo, Metalingüística y Rodamiento, entre muchos otros que fueron ganando su lugar en el freestyle chileno.',
+      'Fue creciendo con las batallas de plaza: Competidores que llegaban de distintas partes de Chile y gente que se acercaba a verlos rapear. Por ahí pasaron Joqerr, Pepe Grillo, Metalingüística, Teorema y Rodamiento, entre muchos otros que fueron ganando su lugar en el freestyle chileno.',
       'En 2022, la DEM empezó a hacerse también en Uruguay, Argentina y España. A las batallas de Chile se sumaron las de otros países, cada uno con sus competidores, su organización y su público.',
       'Acá arrancó ese mismo año, en la Plaza Líber Seregni de Montevideo. Al frente estaba Sant Núñez, que ya venía de organizar 3X Freestyle y La Liga.',
       'Hammer, Harry, Jaff y Anubis fueron algunos de los MCs que estuvieron en esas primeras fechas. Hubo batallas individuales y en duplas, y con los años se sumaron otros formatos, como DEM Tríplice, donde se compite en equipos de tres.',
