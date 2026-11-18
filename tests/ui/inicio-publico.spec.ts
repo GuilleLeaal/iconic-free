@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import type { Route } from '@playwright/test';
 
 const competencias = [
   ['DEM Battles', 'dem-battles'],
@@ -8,6 +9,46 @@ const competencias = [
   ['Iconic Freestyle', 'iconic-freestyle'],
   ['Exiliados Park', 'exiliados-park'],
 ];
+
+test('carga inicial con marca, salida automática y sin repetirse al navegar', async ({ page }, testInfo) => {
+  await page.goto('/');
+  const carga = page.getByRole('status', { name: 'Cargando el sitio', exact: true });
+  await expect(carga).toBeVisible();
+  await expect(page.locator('body')).toHaveCSS('overflow', 'hidden');
+  await page.screenshot({ path: testInfo.outputPath('pantalla-carga.png') });
+  await expect(carga).toHaveCount(0, { timeout: 5000 });
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden');
+  await page.getByRole('link', { name: 'Iniciar sesión', exact: true }).first().click();
+  await expect(page.getByLabel('Correo', { exact: true })).toBeVisible();
+  await expect(carga).toHaveCount(0);
+  await page.getByRole('link', { name: 'Inicio', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(carga).toHaveCount(0);
+  await page.reload();
+  await expect(carga).toBeVisible();
+  await expect(carga).toHaveCount(0, { timeout: 5000 });
+});
+
+test('reducir movimiento y un recurso pendiente no dejan el sitio bloqueado', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const pendientes: Route[] = [];
+  await page.route('**/logo-gold-transparent.png', route => { pendientes.push(route); });
+  try {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('status', { name: 'Cargando el sitio', exact: true })).toBeVisible();
+    await expect(page.locator('.carga-inicial-logo')).toHaveCSS('animation-name', 'none');
+    await expect(page.locator('.carga-inicial')).toHaveCSS('transition-duration', '0s');
+    await expect(page.locator('.carga-inicial')).toHaveCount(0, { timeout: 5000 });
+    expect(pendientes.length).toBeGreaterThan(0);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden');
+    await page.getByRole('link', { name: 'Iniciar sesión', exact: true }).first().click();
+    await expect(page.getByLabel('Correo', { exact: true })).toBeEditable();
+  } finally {
+    await Promise.all(pendientes.map(route => route.abort()));
+  }
+});
 
 test('inicio público con identidades locales, orden editorial y páginas de presentación', async ({ page }, testInfo) => {
   const consultasPrivadas: string[] = [];
