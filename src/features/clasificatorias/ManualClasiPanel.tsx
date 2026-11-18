@@ -84,19 +84,21 @@ export default function ManualClasiPanel({ fecha, bloqueado, onContinue }: { fec
     {error && <p className="mensaje-error" role="alert">{error}</p>}
     {notice && <p className="mensaje-guardado" role="status">{notice}</p>}
     {loadError && <p className="mensaje-error" role="alert">{loadError}</p>}
-    {editing && <EditarInscripcion key={editing.id} inscripcion={editing} esIndividual={fecha.integrantes_por_equipo === 1}
+    {editing && <EditarInscripcion key={editing.id} inscripcion={editing} esIndividual={fecha.integrantes_por_equipo === 1} maximoIntegrantes={fecha.integrantes_por_equipo}
       onCancelar={() => setEditing(null)} onGuardada={() => { setEditing(null); setAttempt(a => a + 1); }} />}
     {slot && <form className="formulario-inscripcion" onSubmit={e => {
       e.preventDefault();
-      void execute(() => registerInRound(fecha.id, layout.version, slot.round, slot.position, name, members, returning || null),
+      const integrantes = members.map(alias => alias.trim()).filter(Boolean);
+      if (!returning && integrantes.length === 0) { setError('Ingresá al menos un alias.'); return; }
+      void execute(() => registerInRound(fecha.id, layout.version, slot.round, slot.position, name, integrantes, returning || null),
         'Participante inscripto en la ronda.', () => { setSlot(null); setName(''); setMembers(Array(fecha.integrantes_por_equipo).fill('')); setReturning(''); });
     }}>
       <h3>Inscribir · {slot.label}</h3>
       <fieldset disabled={saving || loading || !editable || Boolean(loadError)}>
         {withdrawn.length > 0 && <label className="campo">Participante<select value={returning} onChange={e => setReturning(e.target.value)}><option value="">Inscribir participante nuevo</option>{withdrawn.map(i => <option key={i.id} value={i.id}>Reincorporar a {i.nombre}</option>)}</select></label>}
         {!returning && <div className="campos-inscripcion">
-          {fecha.integrantes_por_equipo > 1 && <label className="campo campo-ancho">Nombre del equipo (opcional)<input value={name} onChange={e => setName(e.target.value)} /></label>}
-          {members.map((alias, index) => <label className="campo" key={index}>{members.length === 1 ? 'Alias' : `Alias del integrante ${index + 1}`}<input required autoFocus={index === 0} autoComplete="off" value={alias} onChange={e => setMembers(values => values.map((v, i) => i === index ? e.target.value : v))} /></label>)}
+          {fecha.integrantes_por_equipo > 1 && <label className="campo campo-ancho">Nombre del equipo (opcional)<input value={name} onChange={e => setName(e.target.value)} /><span className="ayuda-campo">Anotá entre 1 y {fecha.integrantes_por_equipo} integrantes; dejá vacíos los lugares libres.</span></label>}
+          {members.map((alias, index) => <label className="campo" key={index}>{members.length === 1 ? 'Alias' : `Alias del integrante ${index + 1}`}<input required={fecha.integrantes_por_equipo === 1} autoFocus={index === 0} autoComplete="off" value={alias} onChange={e => setMembers(values => values.map((v, i) => i === index ? e.target.value : v))} /></label>)}
         </div>}
         <div className="acciones-armado"><button type="submit" className="boton boton-principal">{saving ? 'Inscribiendo…' : 'Inscribir en este lugar'}</button>
           <button type="button" className="boton boton-secundario" onClick={() => setSlot(null)}>Cancelar</button></div>

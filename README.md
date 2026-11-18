@@ -18,7 +18,7 @@ npm run build
 npm run lint
 ```
 
-El frontend requiere el esquema hasta 032 y el bootstrap. Las simulaciones de
+El frontend requiere el esquema hasta 033 y el bootstrap. Las simulaciones de
 API se utilizan únicamente en las pruebas de navegador.
 
 La interfaz cierra la sesión tras 60 minutos sin interacción o a las 12 horas,
@@ -32,8 +32,10 @@ respaldo y ejecutar `supabase/preflight.sql`, que contiene solo lecturas.
 Comparar sus funciones, ACL, RLS, tablas, constraints, índices, triggers y vistas
 con el repo. No declarar aplicada una migración basándose solo en Git.
 
-- Base nueva con Supabase Auth: aplicar 001–032 en orden, una vez cada archivo.
-- Base con exactamente 001–015: aplicar **solo 016–032**, en orden.
+- Base nueva con Supabase Auth: aplicar 001–033 en orden, una vez cada archivo.
+- Base con exactamente 001–015: aplicar **solo 016–033**, en orden.
+- Si ya aplicaste hasta 032, ejecutar **solo 033_equipos_incompletos.sql** antes de publicar el frontend. Permite equipos de 1 al máximo configurado. Ver [actualización 033](docs/ACTUALIZACION_033.md).
+- Para cualquier base anterior, completar los pasos que siguen hasta 032 y después aplicar 033.
 - Si ya aplicaste hasta 031, ejecutar **solo 032_armados_manuales.sql** antes de publicar el frontend. Ver [actualización 032](docs/ACTUALIZACION_032.md).
 - Si ya aplicaste hasta 030, ejecutar **031_nombre_equipo_opcional.sql** y **032_armados_manuales.sql**, en ese orden. La 031 permite dejar vacío el nombre del equipo y usar los alias de los integrantes.
 - Si ya aplicaste hasta 028, ejecutar **029_borrado_definitivo.sql** y **030_nombres_de_usuario.sql**, en ese orden, y después 031 y 032 antes de publicar el nuevo frontend. Ver [actualización 029–030](docs/ACTUALIZACION_029_030.md).
@@ -81,6 +83,7 @@ agregan sin rellenar autores ni timestamps históricos desconocidos.
 | 030 | Nombre de usuario único y edición de la propia cuenta |
 | 031 | Nombre de equipo opcional; etiqueta derivada de los alias cuando se omite |
 | 032 | Clasis manuales con inscripción por ronda y cruces iniciales por sorteo, puntaje o manuales |
+| 033 | Equipos de 1 al máximo del formato en altas, edición y altas tardías |
 
 La actualización deja inicialmente las fechas antiguas sin competencia y sin
 acceso. En una ventana de mantenimiento, aplicar todos los correctivos y luego
@@ -251,4 +254,4 @@ Los jurados asignados pueden retirar participantes por ausencia de su tanda mien
 
 Cada persona elige un nombre de usuario único de 3–30 caracteres (letras sin tildes, números, punto o guion bajo; inicial alfanumérica), guardado en minúsculas. Se configura al preparar el acceso o desde Mi cuenta. El ingreso y las invitaciones siguen usando correo. Los perfiles anteriores conservan su nombre hasta que lo editen.
 
-En duplas, tríos y otros equipos el nombre del equipo es opcional. Los alias de todos los integrantes siguen siendo obligatorios. Si se omite o se borra el nombre, se usa una etiqueta como Luna / Norte / Sur en las listas, sorteos y planillas. Las inscripciones anteriores conservan sus nombres.
+En duplas, tríos y otros equipos el formato indica un máximo: se puede inscribir entre 1 y esa cantidad de integrantes. En los formularios, dejar vacíos los lugares libres; se exige al menos un alias. El nombre del equipo es opcional. Si se omite o se borra, se usa una etiqueta como Luna / Norte / Sur en las listas, sorteos y planillas. Cada equipo ocupa una inscripción y recibe las casillas y el total de la planilla una sola vez, sin multiplicarlos ni dividirlos por integrantes. Las inscripciones anteriores conservan sus nombres.

@@ -176,8 +176,9 @@ export default function InscripcionesPanel({
     setErrorFormulario("");
     setAviso("");
 
-    if (borrador.integrantes.some((alias) => !alias.trim())) {
-      setErrorFormulario("Completá todos los alias.");
+    const integrantes = borrador.integrantes.map(alias => alias.trim()).filter(Boolean);
+    if (integrantes.length === 0) {
+      setErrorFormulario("Ingresá al menos un alias.");
       return;
     }
 
@@ -185,7 +186,7 @@ export default function InscripcionesPanel({
     setGuardando(true);
 
     try {
-      await anotarInscripcion(fecha.id, borrador.nombre, borrador.integrantes);
+      await anotarInscripcion(fecha.id, borrador.nombre, integrantes);
 
       setBorrador({
         nombre: "",
@@ -316,7 +317,7 @@ export default function InscripcionesPanel({
                       }))
                     }
                   />
-                  <span className="ayuda-campo">Si queda vacío, se mostrarán los alias de los integrantes.</span>
+                  <span className="ayuda-campo">Anotá entre 1 y {cantidad} integrantes; dejá vacíos los lugares libres. Si no hay nombre, se mostrarán sus alias.</span>
                 </div>
               )}
 
@@ -334,7 +335,7 @@ export default function InscripcionesPanel({
                       cambiarIntegrante(indice, event.target.value)
                     }
                     autoComplete="off"
-                    required
+                    required={esIndividual}
                   />
                 </div>
               ))}
@@ -384,6 +385,7 @@ export default function InscripcionesPanel({
           key={editando.id}
           inscripcion={editando}
           esIndividual={esIndividual}
+          maximoIntegrantes={cantidad}
           onCancelar={() => setEditando(null)}
           onGuardada={() => {
             setEditando(null);

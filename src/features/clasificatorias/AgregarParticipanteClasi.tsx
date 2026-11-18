@@ -40,7 +40,8 @@ export default function AgregarParticipanteClasi({
         p.grupoId === grupo.id &&
         typeof p.solicitudId === "string" &&
         Array.isArray(p.integrantes) &&
-        p.integrantes.length === cantidad &&
+        p.integrantes.length >= 1 &&
+        p.integrantes.length <= cantidad &&
         p.integrantes.every((a: unknown) => typeof a === "string") &&
         typeof p.nombre === "string" &&
         (p.tandaId === null || typeof p.tandaId === "string")
@@ -55,7 +56,7 @@ export default function AgregarParticipanteClasi({
     if (pendiente)
       return {
         nombre: pendiente.nombre,
-        integrantes: pendiente.integrantes,
+        integrantes: Array.from({ length: cantidad }, (_, i) => pendiente.integrantes[i] ?? ''),
         destino: pendiente.tandaId ?? "nueva",
       };
     try {
@@ -105,12 +106,17 @@ export default function AgregarParticipanteClasi({
   async function agregar(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (deshabilitado || enCurso.current) return;
+    const integrantes = formulario.integrantes.map(a => a.trim()).filter(Boolean);
+    if (!pendiente && integrantes.length === 0) {
+      setError("Ingresá al menos un alias.");
+      return;
+    }
     const solicitud = pendiente ?? {
       solicitudId: crypto.randomUUID(),
       grupoId: grupo.id,
       tandaId: formulario.destino === "nueva" ? null : formulario.destino,
       nombre: formulario.nombre.trim(),
-      integrantes: formulario.integrantes.map((a) => a.trim()),
+      integrantes,
     };
     // Guardar la solicitud antes de enviarla permite recuperar una respuesta
     // perdida incluso después de recargar, sin duplicar la inscripción.
@@ -210,7 +216,7 @@ export default function AgregarParticipanteClasi({
               >
                 {habilitadas.map((t) => (
                   <option key={t.id} value={t.id}>
-                    Tanda {t.numero} · {t.entradas.length}/5 inscripciones
+                    Tanda {t.numero} · {t.entradas.length}/{grupo.clasificatoria.fecha.maximo_tanda ?? 5} inscripciones
                   </option>
                 ))}
                 {!habilitadas.some((t) => t.id === formulario.destino) &&
@@ -234,7 +240,7 @@ export default function AgregarParticipanteClasi({
                     editar({ ...formulario, nombre: e.target.value })
                   }
                 />
-                <span className="ayuda-campo">Si queda vacío, se mostrarán los alias de los integrantes.</span>
+                <span className="ayuda-campo">Anotá entre 1 y {cantidad} integrantes; dejá vacíos los lugares libres. Si no hay nombre, se mostrarán sus alias.</span>
               </div>
             )}
             <div className="integrantes-alta-clasi">
@@ -246,7 +252,7 @@ export default function AgregarParticipanteClasi({
                   <input
                     id={`alias-alta-${tandaId}-${i}`}
                     value={alias}
-                    required
+                    required={cantidad === 1}
                     autoComplete="off"
                     onChange={(e) =>
                       editar({

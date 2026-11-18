@@ -64,18 +64,18 @@ async function prepare(page: Page, members = 1, results = false) {
   return { submissions, getLayout: () => layout };
 }
 
-for (const members of [1, 2]) test(`clasis manual: inscripción de ${members} integrante(s), lugares libres, movimiento y comienzo`, async ({ page }, info) => {
+for (const members of [1, 2, 5]) test(`clasis manual: hasta ${members} integrante(s), equipos incompletos, movimiento y comienzo`, async ({ page }, info) => {
   const { getLayout } = await prepare(page, members);
   await expect(page.getByRole('button', { name: 'Sorteos', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Agregar clasi A', exact: true }).click();
   await page.getByRole('button', { name: 'Agregar ronda a Clasi A', exact: true }).click();
   await page.getByRole('button', { name: 'Inscribir en Clasi A · Ronda 1 · Lugar 5', exact: true }).click();
   if (members === 1) await page.getByLabel('Alias', { exact: true }).fill('Último');
-  else for (let i = 0; i < members; i++) await page.getByLabel(`Alias del integrante ${i + 1}`, { exact: true }).fill(['Luna', 'Norte'][i]);
+  else await page.getByLabel('Alias del integrante 1', { exact: true }).fill('Luna');
   await page.getByRole('button', { name: 'Inscribir en este lugar', exact: true }).click();
   await page.getByRole('button', { name: 'Inscribir en Clasi A · Ronda 1 · Lugar 1', exact: true }).click();
   if (members === 1) await page.getByLabel('Alias', { exact: true }).fill('Primero');
-  else for (let i = 0; i < members; i++) await page.getByLabel(`Alias del integrante ${i + 1}`, { exact: true }).fill(['Este', 'Sur'][i]);
+  else await page.getByLabel(`Alias del integrante ${members}`, { exact: true }).fill('Este');
   await page.getByRole('button', { name: 'Inscribir en este lugar', exact: true }).click();
   await expect(page.getByText('2/5 inscriptos', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Agregar ronda a Clasi A', exact: true }).click();
@@ -100,7 +100,7 @@ for (const members of [1, 2]) test(`clasis manual: inscripción de ${members} in
 
 for (const mode of ['puntaje', 'manual', 'sorteo']) test(`vista previa y confirmación exacta de cruces por ${mode}`, async ({ page }, info) => {
   const { submissions } = await prepare(page, 1, true);
-  await page.getByLabel('Armado de cruces', { exact: true }).selectOption(mode);
+  await page.getByRole('combobox', { name: 'Armado de cruces', exact: true }).selectOption(mode);
   const editor = page.locator('.armado-cruces');
   const cards = editor.locator('.tanda-clasi');
   const confirm = page.getByRole('button', { name: 'Cerrar clasis e iniciar eliminatorias', exact: true });
@@ -111,8 +111,8 @@ for (const mode of ['puntaje', 'manual', 'sorteo']) test(`vista previa y confirm
   if (mode === 'manual') {
     await expect(confirm).toBeDisabled();
     await page.getByRole('button', { name: 'Completar por puntaje', exact: true }).click();
-    await page.getByLabel('Lugar 1 del cruce 1', { exact: true }).selectOption('mc-4');
-    await expect(page.getByLabel('Lugar 1 del cruce 2', { exact: true })).toHaveValue('mc-1');
+    await page.getByRole('combobox', { name: 'Lugar 1 del cruce 1', exact: true }).selectOption('mc-4');
+    await expect(page.getByRole('combobox', { name: 'Lugar 1 del cruce 2', exact: true })).toHaveValue('mc-1');
   }
   await expect(confirm).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

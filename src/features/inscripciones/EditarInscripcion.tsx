@@ -7,6 +7,7 @@ import type { Inscripcion } from './inscripcionesService';
 type Props = {
   inscripcion: Inscripcion;
   esIndividual: boolean;
+  maximoIntegrantes: number;
   onGuardada: () => void;
   onCancelar: () => void;
 };
@@ -14,6 +15,7 @@ type Props = {
 export default function EditarInscripcion({
   inscripcion,
   esIndividual,
+  maximoIntegrantes,
   onGuardada,
   onCancelar,
 }: Props) {
@@ -22,7 +24,7 @@ export default function EditarInscripcion({
   const [datos, setDatos] = useState(() => {
     const originales = {
       nombre: !esIndividual && inscripcion.nombre === inscripcion.integrantes.map(i => i.alias).join(' / ') ? '' : inscripcion.nombre,
-      integrantes: inscripcion.integrantes.map((item) => item.alias),
+      integrantes: Array.from({ length: maximoIntegrantes }, (_, i) => inscripcion.integrantes[i]?.alias ?? ''),
       version: inscripcion.version,
     };
 
@@ -44,12 +46,14 @@ export default function EditarInscripcion({
         Number.isInteger(borrador.version) &&
         borrador.version >= 1 &&
         Array.isArray(borrador.integrantes) &&
-        borrador.integrantes.length === originales.integrantes.length &&
+        borrador.integrantes.length >= 1 &&
+        borrador.integrantes.length <= maximoIntegrantes &&
         borrador.integrantes.every((alias) => typeof alias === 'string')
       ) {
+        const integrantes = borrador.integrantes;
         return {
           nombre: borrador.nombre,
-          integrantes: borrador.integrantes,
+          integrantes: Array.from({ length: maximoIntegrantes }, (_, i) => integrantes[i] ?? ''),
           version: borrador.version,
         };
       }
@@ -93,8 +97,9 @@ export default function EditarInscripcion({
 
     if (enCurso.current || desactualizado) return;
 
-    if (datos.integrantes.some((alias) => !alias.trim())) {
-      setError('Completá todos los alias que correspondan.');
+    const integrantes = datos.integrantes.map(alias => alias.trim()).filter(Boolean);
+    if (integrantes.length === 0) {
+      setError('Ingresá al menos un alias.');
       return;
     }
 
@@ -107,7 +112,7 @@ export default function EditarInscripcion({
         { ...inscripcion, version: datos.version },
         'editar',
         datos.nombre,
-        datos.integrantes,
+        integrantes,
       );
 
       try {
@@ -158,7 +163,7 @@ export default function EditarInscripcion({
                     }))
                   }
                 />
-                <span className="ayuda-campo">Si queda vacío, se mostrarán los alias de los integrantes.</span>
+                <span className="ayuda-campo">Anotá entre 1 y {maximoIntegrantes} integrantes; dejá vacíos los lugares libres. Si no hay nombre, se mostrarán sus alias.</span>
               </div>
             )}
 
@@ -178,7 +183,7 @@ export default function EditarInscripcion({
                       ),
                     }))
                   }
-                  required
+                  required={esIndividual}
                 />
               </div>
             ))}
