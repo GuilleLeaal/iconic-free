@@ -16,6 +16,7 @@ test('carga inicial con marca, salida automática y sin repetirse al navegar', a
   await expect(carga).toBeVisible();
   await expect(page.locator('body')).toHaveCSS('overflow', 'hidden');
   await page.screenshot({ path: testInfo.outputPath('pantalla-carga.png') });
+  await page.screenshot({ path: testInfo.outputPath('pantalla-carga-completa.png'), animations: 'disabled' });
   await expect(carga).toHaveCount(0, { timeout: 5000 });
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden');
